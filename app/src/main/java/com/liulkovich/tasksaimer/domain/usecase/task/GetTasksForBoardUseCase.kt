@@ -6,5 +6,5 @@ import javax.inject.Inject
 class GetTasksForBoardUseCase @Inject constructor(
     private val taskRepository: TaskRepository
 ) {
-    operator fun invoke(boardId: Int) = taskRepository.getTasksForBoard(boardId)
+    operator fun invoke(boardId: String) = taskRepository.getTasksForBoard(boardId)
 }

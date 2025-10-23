@@ -2,7 +2,7 @@ package com.liulkovich.tasksaimer.domain.entiity
 
 
 data class Board(
-    val id: Int,
+    val id: String,
     val title: String,
     val description: String? = null,
     val imageUrl: String? = null,

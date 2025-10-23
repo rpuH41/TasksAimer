@@ -9,7 +9,7 @@ interface BoardRepository {
 
     suspend fun addBoard(board: Board) //добавление новой доски
 
-    suspend fun deleteBoardById(boardId: Int) //удаление доски
+    suspend fun deleteBoardById(boardId: String) //удаление доски
 
     suspend fun editBoard(board: Board) //редактирование доски
 

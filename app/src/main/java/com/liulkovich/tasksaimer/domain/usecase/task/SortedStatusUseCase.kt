@@ -8,7 +8,7 @@ import javax.inject.Inject
 class SortedStatusUseCase @Inject constructor(
     private val taskRepository: TaskRepository
 ) {
-    operator fun invoke(boardId: Int, status: String): Flow<List<Task>>{
+    operator fun invoke(boardId: String, status: String): Flow<List<Task>>{
         return taskRepository.sortedStatus(boardId, status)
     }
 }
