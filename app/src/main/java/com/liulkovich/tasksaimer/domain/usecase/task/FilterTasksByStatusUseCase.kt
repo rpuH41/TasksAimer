@@ -5,7 +5,7 @@ import com.liulkovich.tasksaimer.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class SortedStatusUseCase @Inject constructor(
+class FilterTasksByStatusUseCase @Inject constructor(
     private val taskRepository: TaskRepository
 ) {
     operator fun invoke(boardId: String, status: String): Flow<List<Task>>{

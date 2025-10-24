@@ -9,7 +9,6 @@ class DeleteBoardByIdUseCase @Inject constructor(
     private val taskRepository: TaskRepository
 ) {
     suspend operator fun invoke(boardId: String) {
-
         taskRepository.deleteAllTasksByBoardId(boardId)
         boardRepository.deleteBoardById(boardId)
     }

@@ -3,7 +3,6 @@ package com.liulkovich.tasksaimer.data.repository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.liulkovich.tasksaimer.data.mapper.toDomain
 import com.liulkovich.tasksaimer.data.mapper.toDto
-import com.liulkovich.tasksaimer.data.remote.BoardDTO
 import com.liulkovich.tasksaimer.data.remote.TaskDTO
 import com.liulkovich.tasksaimer.domain.entiity.Task
 import com.liulkovich.tasksaimer.domain.repository.TaskRepository
@@ -47,6 +46,29 @@ class TaskRepositoryImp @Inject constructor(
         tasksCollection.add(taskDto).await()
     }
 
+    override fun searchTaskByTitle(boardId: String, title: String): Flow<List<Task>> = callbackFlow {
+        val query = tasksCollection
+            .whereEqualTo("boardId",boardId)
+            .whereGreaterThanOrEqualTo("title", title)
+            .whereLessThanOrEqualTo("title", title + "\uf8ff")
+        val subscription = query.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            if (snapshot != null) {
+                val tasks = snapshot.documents.mapNotNull { document ->
+                    val taskDTO = document.toObject(TaskDTO::class.java)
+                    taskDTO?.copy(id = document.id)?.toDomain()
+                }
+                trySend(tasks)
+            }
+        }
+        awaitClose {
+            subscription.remove()
+        }
+    }
+
     override fun sortedStatus(
         boardId: String,
         status: String,
@@ -71,7 +93,6 @@ class TaskRepositoryImp @Inject constructor(
             subscription.remove()
         }
     }
-
 
     override suspend fun editTask(task: Task) {
         val taskDto = task.toDto()

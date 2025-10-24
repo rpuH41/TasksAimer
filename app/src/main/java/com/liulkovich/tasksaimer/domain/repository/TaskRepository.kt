@@ -17,4 +17,5 @@ interface TaskRepository {
 
     suspend fun deleteAllTasksByBoardId(boardId: String) //удаляет все задачи при удаление доски
 
+    fun searchTaskByTitle(boardId: String, title: String): Flow<List<Task>> //поиск по зоголовку
 }
