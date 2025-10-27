@@ -48,7 +48,7 @@ class BoardsViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        error = throwable.message ?: "Неизвестная ошибка загрузки досок."
+                        error = throwable.message ?: "Unknown error loading boards."
                     )
                 }
             }

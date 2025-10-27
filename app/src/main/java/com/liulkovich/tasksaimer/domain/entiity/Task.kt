@@ -10,5 +10,6 @@ data class Task(
     val priority: Priority = Priority.MEDIUM,
     val status: Status = Status.TODO,
     val assignedTo: List<String> = emptyList(),
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
 )

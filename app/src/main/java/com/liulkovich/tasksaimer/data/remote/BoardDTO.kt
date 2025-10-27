@@ -10,5 +10,6 @@ data class BoardDTO(
     val dueDate: String? = null,
     val ownerId: String? = null,
     val members: List<String> = emptyList(),
-    val createdAt: Long? = null
+    val createdAt: Long? = null,
+    val updatedAt: Long? = null
 )

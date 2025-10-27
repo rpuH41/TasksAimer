@@ -56,7 +56,7 @@ class TasksViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        error = throwable.message ?: "Неизвестная ошибка загрузки задач."
+                        error = throwable.message ?: "Unknown error loading tasks."
                     )
                 }
             }
@@ -72,6 +72,27 @@ class TasksViewModel @Inject constructor(
             when(command){
                 is TaskCommand.FilterByStatus -> {
                     filterTasksByStatusUseCase(command.boardId, command.status)
+                        .onStart {
+                            _state.update { it.copy(isLoading = true, error = null) }
+                        }
+                        .catch { e ->
+                            _state.update {
+                                it.copy(
+                                    isLoading = false,
+                                    error = e.message ?: "Error filtering tasks."
+                                )
+                            }
+                        }
+                        .onEach { tasks ->
+                            _state.update {
+                                it.copy(
+                                    tasks = tasks,
+                                    isLoading = false,
+                                    error = null
+                                )
+                            }
+                        }
+                        .launchIn(viewModelScope)
                 }
 
                 is TaskCommand.InputSearchQuery -> {

@@ -10,5 +10,6 @@ data class TaskDTO (
     val priority: String? = null,
     val status: String? = null,
     val assignedTo: List<String> = emptyList(),
-    val createdAt: Long? = null
+    val createdAt: Long? = null,
+    val updatedAt: Long? = null
 )

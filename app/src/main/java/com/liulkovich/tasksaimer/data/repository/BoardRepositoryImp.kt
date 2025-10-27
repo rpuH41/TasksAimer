@@ -52,8 +52,10 @@ class BoardRepositoryImp @Inject constructor(
     }
 
     override suspend fun editBoard(board: Board) {
+        val boardId = board.id ?:
+        throw IllegalArgumentException("Board ID cannot be null when editing a board.")
         val boardDto = board.toDto()
-        boardsCollection.document(board.id).set(boardDto).await()
+        boardsCollection.document(boardId).set(boardDto).await()
     }
 
     override fun searchBoardByTitle(title: String): Flow<List<Board>> = callbackFlow {

@@ -28,7 +28,7 @@ fun Board.toDto(): BoardDTO {
     return BoardDTO(
         // Для новой доски id будет пустой строкой.
         // Мы передаем null, чтобы Firestore сгенерировал новый ID.
-        id = if (this.id.isBlank()) null else this.id,
+        id = if (this.id.isNullOrBlank()) null else this.id,
         title = this.title,
         description = this.description,
         imageUrl = this.imageUrl,
