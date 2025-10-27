@@ -1,7 +1,7 @@
 package com.liulkovich.tasksaimer.domain.entiity
 
 data class Task(
-    val id: String,
+    val id: String? = null,
     val boardId: String,
     val title: String,
     val description: String? = null,
@@ -10,6 +10,7 @@ data class Task(
     val priority: Priority = Priority.MEDIUM,
     val status: Status = Status.TODO,
     val assignedTo: List<String> = emptyList(),
+    val ownerId: String,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )
