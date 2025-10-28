@@ -7,6 +7,8 @@ interface TaskRepository {
 
     fun getTasksForBoard(boardId: String): Flow<List<Task>> //Отображает весь список задач
 
+    fun getTaskForId(taskId: String): Flow<Task?> //Получаем одну задачу
+
     suspend fun addTask(task: Task) //Добавление задачи
 
     fun sortedStatus(boardId: String, status: String): Flow<List<Task>> //сортировать по статусу

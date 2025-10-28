@@ -40,7 +40,9 @@ fun TaskDTO.toDomain(): Task {
         status = domainStatus,
         assignedTo = assignedTo,
         // Если createdAt null, используем текущее время (для гарантии).
-        createdAt = createdAt ?: System.currentTimeMillis()
+        createdAt = createdAt ?: System.currentTimeMillis(),
+        ownerId = "Заглушка",
+        updatedAt = updatedAt ?: System.currentTimeMillis()
     )
 }
 
@@ -48,7 +50,7 @@ fun TaskDTO.toDomain(): Task {
 fun Task.toDto(): TaskDTO {
     return TaskDTO(
         // Если ID задачи - пустая строка, отправляем null, чтобы Firestore сгенерировал новый.
-        id = if (this.id.isBlank()) null else this.id,
+        id = if (this.id.isNullOrBlank()) null else this.id,
         boardId = this.boardId,
         title = this.title,
         description = this.description,

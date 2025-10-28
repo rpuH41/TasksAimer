@@ -22,7 +22,6 @@ class TaskRepositoryImp @Inject constructor(
     override fun getTasksForBoard(boardId: String): Flow<List<Task>> = callbackFlow {
         val query = tasksCollection.whereEqualTo("boardId",boardId)
         val subscription = query.addSnapshotListener { snapshot, error ->
-
             if (error != null) {
                 close(error)
                 return@addSnapshotListener
@@ -39,6 +38,24 @@ class TaskRepositoryImp @Inject constructor(
         awaitClose {
             subscription.remove() // Отменяем слушатель Firestore!
         }
+    }
+
+    override fun getTaskForId(taskId: String): Flow<Task?> = callbackFlow {
+        val docRef = tasksCollection.document(taskId)
+        val subscription = docRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            if (snapshot != null && snapshot.exists()) {
+                val taskDto = snapshot.toObject(TaskDTO::class.java)
+                val task = taskDto?.copy(id = snapshot.id)?.toDomain()
+                trySend(task)
+            } else {
+                trySend(null)
+            }
+        }
+        awaitClose { subscription.remove() }
     }
 
     override suspend fun addTask(task: Task) {
@@ -95,8 +112,10 @@ class TaskRepositoryImp @Inject constructor(
     }
 
     override suspend fun editTask(task: Task) {
+        val taskId = task.id ?:
+        throw IllegalArgumentException("Task ID cannot be null when editing a board.")
         val taskDto = task.toDto()
-        tasksCollection.document(task.id).set(taskDto).await()
+        tasksCollection.document(taskId).set(taskDto).await()
     }
 
     override suspend fun deleteTask(taskId: String) {
@@ -117,4 +136,6 @@ class TaskRepositoryImp @Inject constructor(
         }
 
     }
+
+
 }

@@ -30,6 +30,8 @@ interface DataModule {
         impl: BoardRepositoryImp
     ): BoardRepository
 
+
+
     companion object{
         @Provides
         @Singleton
