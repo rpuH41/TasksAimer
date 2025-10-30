@@ -30,8 +30,6 @@ interface DataModule {
         impl: BoardRepositoryImp
     ): BoardRepository
 
-
-
     companion object{
         @Provides
         @Singleton
@@ -39,6 +37,4 @@ interface DataModule {
             return Firebase.firestore
         }
     }
-
-
 }
