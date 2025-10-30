@@ -13,7 +13,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.jvm.java
 
-class TaskRepositoryImp @Inject constructor(
+class TaskRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : TaskRepository {
 

@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class BoardRepositoryImp @Inject constructor(
+class BoardRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ): BoardRepository {
 

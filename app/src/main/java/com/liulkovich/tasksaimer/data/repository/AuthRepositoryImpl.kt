@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class AuthRepositoryImp @Inject constructor(
+class AuthRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 
 ): AuthRepository {

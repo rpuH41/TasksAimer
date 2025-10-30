@@ -3,9 +3,9 @@ package com.liulkovich.tasksaimer.di
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
-import com.liulkovich.tasksaimer.data.repository.BoardRepositoryImp
-import com.liulkovich.tasksaimer.data.repository.AuthRepositoryImp
-import com.liulkovich.tasksaimer.data.repository.TaskRepositoryImp
+import com.liulkovich.tasksaimer.data.repository.BoardRepositoryImpl
+import com.liulkovich.tasksaimer.data.repository.AuthRepositoryImpl
+import com.liulkovich.tasksaimer.data.repository.TaskRepositoryImpl
 import com.liulkovich.tasksaimer.domain.repository.AuthRepository
 import com.liulkovich.tasksaimer.domain.repository.BoardRepository
 import com.liulkovich.tasksaimer.domain.repository.TaskRepository
@@ -22,19 +22,19 @@ interface DataModule {
     @Binds
     @Singleton
     fun bindAuthRepository(
-        authRepositoryImpl: AuthRepositoryImp
+        authRepositoryImpl: AuthRepositoryImpl
     ): AuthRepository
 
     @Singleton
     @Binds
     fun bindTasksRepository(
-        impl: TaskRepositoryImp
+        impl: TaskRepositoryImpl
     ): TaskRepository
 
     @Singleton
     @Binds
     fun bindBoardRepository(
-        impl: BoardRepositoryImp
+        impl: BoardRepositoryImpl
     ): BoardRepository
 
     companion object{
