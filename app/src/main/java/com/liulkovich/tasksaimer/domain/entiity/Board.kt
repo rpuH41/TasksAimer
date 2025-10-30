@@ -5,7 +5,7 @@ data class Board(
     val id: String? = null,
     val title: String,
     val description: String? = null,
-    val imageUrl: String? = null,
+    //val imageUrl: String? = null,
     val tasksCount: Int = 0,
     val dueDate: String? = null,
     val ownerId: String,

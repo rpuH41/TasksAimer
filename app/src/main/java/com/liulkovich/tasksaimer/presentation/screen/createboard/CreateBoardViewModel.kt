@@ -80,7 +80,7 @@ class CreateBoardViewModel @Inject constructor(
                                 Board(
                                 title = title,
                                 description = description,
-                                imageUrl = imageUrl,
+                                //imageUrl = imageUrl,
                                 ownerId = "currentUserId",
                                 )
                             )

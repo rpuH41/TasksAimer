@@ -8,7 +8,7 @@ fun BoardDTO.toDomain(): Board {
         id = this.id ?: throw IllegalStateException("Board ID is required, cannot be null."),
         title = this.title ?: throw IllegalStateException("Board Title is required, cannot be null."),
         description = this.description,
-        imageUrl = this.imageUrl,
+        //imageUrl = this.imageUrl,
         // tasksCount всегда имеет дефолт 0 в DTO, поэтому безопасно
         tasksCount = this.tasksCount,
         dueDate = this.dueDate,
@@ -31,7 +31,7 @@ fun Board.toDto(): BoardDTO {
         id = if (this.id.isNullOrBlank()) null else this.id,
         title = this.title,
         description = this.description,
-        imageUrl = this.imageUrl,
+        //imageUrl = this.imageUrl,
         tasksCount = this.tasksCount,
         dueDate = this.dueDate,
         ownerId = this.ownerId,
