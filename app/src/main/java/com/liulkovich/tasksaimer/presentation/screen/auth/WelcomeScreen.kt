@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.liulkovich.tasksaimer.R
 
-
 @Composable
 fun WelcomeScreen(
     modifier: Modifier = Modifier,
