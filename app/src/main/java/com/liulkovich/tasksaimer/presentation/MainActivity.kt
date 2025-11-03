@@ -8,8 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.liulkovich.tasksaimer.presentation.screen.auth.SigInScreen
-import com.liulkovich.tasksaimer.presentation.screen.auth.WelcomeScreen
+import com.liulkovich.tasksaimer.presentation.screen.auth.SignUpScreen
 import com.liulkovich.tasksaimer.presentation.ui.theme.TasksAimerTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TasksAimerTheme{
                 Scaffold(modifier = Modifier.fillMaxWidth()) { innerPadding ->
-                    SigInScreen(
+                    SignUpScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

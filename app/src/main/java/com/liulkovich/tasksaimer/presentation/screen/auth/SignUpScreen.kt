@@ -42,9 +42,9 @@ import androidx.compose.ui.unit.sp
 import com.liulkovich.tasksaimer.R
 
 @Composable
-fun SigInScreen(
-    modifier: Modifier = Modifier,
-    ){
+fun SignUpScreen(
+    modifier: Modifier = Modifier
+){
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -60,7 +60,7 @@ fun SigInScreen(
         Text(
             modifier = Modifier
                 .padding(bottom = 15.dp),
-            text = "Welcome Back",
+            text = "Create Account",
             style = TextStyle(
                 fontSize = 35.sp,
                 fontWeight = FontWeight.Bold,
@@ -70,13 +70,69 @@ fun SigInScreen(
         Text(
             modifier = Modifier
                 .padding(bottom = 45.dp),
-            text = "Sign in to continue to your tasks",
+            text = "Let's get you started.",
             style = TextStyle(
                 fontSize = 19.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
         )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(start = 15.dp)
+                    .weight(1f),
+                text = "First Name",
+                style = TextStyle(
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                textAlign = TextAlign.Start
+            )
+            Text(
+                modifier = Modifier
+                    .padding(start = 15.dp)
+                    .weight(1f),
+                text = "Last Name",
+                style = TextStyle(
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                textAlign = TextAlign.Start
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .padding(bottom = 10.dp, start = 15.dp, end = 15.dp)
+                    .weight(1f),
+                shape = RoundedCornerShape(12.dp),
+                value = "",
+                onValueChange = { },
+                label = {
+                    Text("John")
+                },
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .padding(bottom = 10.dp, start = 15.dp, end = 15.dp)
+                    .weight(1f),
+                shape = RoundedCornerShape(12.dp),
+                value = "",
+                onValueChange = { },
+                label = {
+                    Text("Doe")
+                },
+            )
+        }
         Text(
             modifier = Modifier
                 .padding(start = 15.dp)
@@ -113,38 +169,23 @@ fun SigInScreen(
             ),
             textAlign = TextAlign.Start
         )
-        PasswordTextField()
-//        OutlinedTextField(
-//            modifier = Modifier
-//                .padding(start = 15.dp, end = 15.dp)
-//                .fillMaxWidth(),
-//            shape = RoundedCornerShape(12.dp),
-//            value = "",
-//            onValueChange = { },
-//            label = {
-//                Text("Enter your password")
-//            },
-//            trailingIcon = {
-//                Icon(
-//                    imageVector = Icons.Filled.Visibility,
-//                    contentDescription = "Password is invisible"
-//                )
-//            }
-//        )
-        Row(
+        PasswordTextFieldSignUp()
+        Text(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 20.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(onClick = { }) {
-                Text("Forgot password?")
-            }
-
-        }
+                .padding(top = 10.dp, start = 15.dp)
+                .fillMaxWidth(),
+            text = "Password confirmation",
+            style = TextStyle(
+                fontSize = 19.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            ),
+            textAlign = TextAlign.Start
+        )
+        PasswordTextFieldSignUp()
         Button( modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 20.dp,start = 15.dp, end = 15.dp),
+            .padding(bottom = 10.dp,start = 15.dp, end = 15.dp, top = 30.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary
@@ -153,25 +194,23 @@ fun SigInScreen(
         ) {
             Text(
                 modifier = Modifier,
-                text = "Sign In",
+                text = "Sign Up",
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-
-
             )
         }
         Row(
             modifier = Modifier
-                .padding(bottom = 20.dp)
+                .padding(bottom = 30.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Don't have an account?",
+                text = "Already have an account?",
                 style = TextStyle(
                     fontSize = 17.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -179,7 +218,7 @@ fun SigInScreen(
             )
             TextButton(onClick = { }) {
                 Text(
-                    text = "Sign Up",
+                    text = "Sign In",
                     style = TextStyle(
                         fontSize = 17.sp,
                         color = MaterialTheme.colorScheme.primary,
@@ -188,13 +227,12 @@ fun SigInScreen(
                 )
             }
         }
-
     }
-
 }
 
+
 @Composable
-fun PasswordTextField() {
+fun PasswordTextFieldSignUp() {
     var password by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
 
