@@ -19,9 +19,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,222 +42,279 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.liulkovich.tasksaimer.R
 
 @Composable
 fun SignUpScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: SignUpViewModel = hiltViewModel(),
+    onSignInClick: () -> Unit
 ){
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+
+    val firstName by viewModel.firstName.collectAsState()
+    val lastName by viewModel.lastName.collectAsState()
+    val newEmail by viewModel.newEmail.collectAsState()
+    val newPassword by viewModel.newPassword.collectAsState()
+    val confirmPassword by viewModel.confirmPassword.collectAsState()
+    val isButtonEnabled by viewModel.isButtonEnabled.collectAsState()
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Image(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_circle),
-            contentDescription = "app logo",
-            modifier = Modifier
-                .size(200.dp, 150.dp)
-                .padding(bottom = 30.dp)
-        )
-        Text(
-            modifier = Modifier
-                .padding(bottom = 15.dp),
-            text = "Create Account",
-            style = TextStyle(
-                fontSize = 35.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        )
-        Text(
-            modifier = Modifier
-                .padding(bottom = 45.dp),
-            text = "Let's get you started.",
-            style = TextStyle(
-                fontSize = 19.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
+        Column(
+            modifier = modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(
+            Image(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_circle),
+                contentDescription = "app logo",
                 modifier = Modifier
-                    .padding(start = 15.dp)
-                    .weight(1f),
-                text = "First Name",
-                style = TextStyle(
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                ),
-                textAlign = TextAlign.Start
+                    .size(200.dp, 150.dp)
+                    .padding(bottom = 30.dp)
             )
             Text(
                 modifier = Modifier
-                    .padding(start = 15.dp)
-                    .weight(1f),
-                text = "Last Name",
+                    .padding(bottom = 15.dp),
+                text = "Create Account",
                 style = TextStyle(
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                ),
-                textAlign = TextAlign.Start
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            OutlinedTextField(
-                modifier = Modifier
-                    .padding(bottom = 10.dp, start = 15.dp, end = 15.dp)
-                    .weight(1f),
-                shape = RoundedCornerShape(12.dp),
-                value = "",
-                onValueChange = { },
-                label = {
-                    Text("John")
-                },
-            )
-            OutlinedTextField(
-                modifier = Modifier
-                    .padding(bottom = 10.dp, start = 15.dp, end = 15.dp)
-                    .weight(1f),
-                shape = RoundedCornerShape(12.dp),
-                value = "",
-                onValueChange = { },
-                label = {
-                    Text("Doe")
-                },
-            )
-        }
-        Text(
-            modifier = Modifier
-                .padding(start = 15.dp)
-                .fillMaxWidth(),
-            text = "Email",
-            style = TextStyle(
-                fontSize = 19.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            ),
-            textAlign = TextAlign.Start
-        )
-        OutlinedTextField(
-            modifier = Modifier
-                .padding(bottom = 10.dp, start = 15.dp, end = 15.dp)
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            value = "",
-            onValueChange = { },
-            label = {
-                Text("Enter your email")
-            },
-
-            )
-        Text(
-            modifier = Modifier
-                .padding(start = 15.dp)
-                .fillMaxWidth(),
-            text = "Password",
-            style = TextStyle(
-                fontSize = 19.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            ),
-            textAlign = TextAlign.Start
-        )
-        PasswordTextFieldSignUp()
-        Text(
-            modifier = Modifier
-                .padding(top = 10.dp, start = 15.dp)
-                .fillMaxWidth(),
-            text = "Password confirmation",
-            style = TextStyle(
-                fontSize = 19.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            ),
-            textAlign = TextAlign.Start
-        )
-        PasswordTextFieldSignUp()
-        Button( modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 10.dp,start = 15.dp, end = 15.dp, top = 30.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            ),
-            onClick = {  }
-        ) {
-            Text(
-                modifier = Modifier,
-                text = "Sign Up",
-                style = TextStyle(
-                    fontSize = 15.sp,
+                    fontSize = 35.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             )
-        }
-        Row(
-            modifier = Modifier
-                .padding(bottom = 30.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
             Text(
-                text = "Already have an account?",
+                modifier = Modifier
+                    .padding(bottom = 45.dp),
+                text = "Let's get you started.",
                 style = TextStyle(
-                    fontSize = 17.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 19.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             )
-            TextButton(onClick = { }) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
                 Text(
-                    text = "Sign In",
+                    modifier = Modifier
+                        .padding(start = 15.dp)
+                        .weight(1f),
+                    text = "First Name",
                     style = TextStyle(
-                        fontSize = 17.sp,
-                        color = MaterialTheme.colorScheme.primary,
-                        textDecoration = TextDecoration.Underline
+                        fontSize = 19.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
+                    textAlign = TextAlign.Start
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(start = 15.dp)
+                        .weight(1f),
+                    text = "Last Name",
+                    style = TextStyle(
+                        fontSize = 19.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
+                    textAlign = TextAlign.Start
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                FirstNameTextField(
+                    firstName = firstName,
+                    onFirstNameChange = viewModel::onFirstNameChanged,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+                LastNameTextField(
+                    lastName = lastName,
+                    onLastNameChange = viewModel::onLastNameChanged,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
+            Text(
+                modifier = Modifier
+                    .padding(start = 15.dp)
+                    .fillMaxWidth(),
+                text = "Email",
+                style = TextStyle(
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                textAlign = TextAlign.Start
+            )
+            NewEmailTextField(
+                newEmail = newEmail,
+                onNewEmailChange = viewModel::onEmailChanged
+            )
+            Text(
+                modifier = Modifier
+                    .padding(start = 15.dp)
+                    .fillMaxWidth(),
+                text = "Password",
+                style = TextStyle(
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                textAlign = TextAlign.Start
+            )
+            NewPasswordTextField(
+                newPassword = newPassword,
+                onPasswordChange = viewModel::onPasswordChanged
+            )
+            Text(
+                modifier = Modifier
+                    .padding(top = 10.dp, start = 15.dp)
+                    .fillMaxWidth(),
+                text = "Password confirmation",
+                style = TextStyle(
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                textAlign = TextAlign.Start
+            )
+            ConfirmPasswordTextField(
+                confirmPassword = confirmPassword,
+                onConfirmPasswordChange = viewModel::onConfirmPasswordChanged
+            )
+            Button( modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 10.dp,start = 15.dp, end = 15.dp, top = 30.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
+                onClick = { viewModel.signUp() },
+                enabled = isButtonEnabled
+            ) {
+                Text(
+                    modifier = Modifier,
+                    text = "Sign Up",
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 )
+            }
+            Row(
+                modifier = Modifier
+                    .padding(bottom = 30.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Already have an account?",
+                    style = TextStyle(
+                        fontSize = 17.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                )
+                TextButton(onClick = { onSignInClick() }) {
+                    Text(
+                        text = "Sign In",
+                        style = TextStyle(
+                            fontSize = 17.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline
+                        )
+                    )
+                }
             }
         }
     }
 }
 
+@Composable
+fun FirstNameTextField(
+    firstName: String,
+    onFirstNameChange: (String) -> Unit,
+    modifier: Modifier
+){
+    OutlinedTextField(
+        modifier = modifier
+            .padding(bottom = 10.dp, start = 15.dp, end = 15.dp),
+        shape = RoundedCornerShape(12.dp),
+        value = firstName,
+        onValueChange = onFirstNameChange,
+        label = {
+            Text("John")
+        },
+    )
+}
 
 @Composable
-fun PasswordTextFieldSignUp() {
-    var password by remember { mutableStateOf("") }
+fun LastNameTextField(
+    lastName: String,
+    onLastNameChange: (String) -> Unit,
+    modifier: Modifier
+)
+{
+    OutlinedTextField(
+        modifier = modifier
+            .padding(bottom = 10.dp, start = 15.dp, end = 15.dp),
+        shape = RoundedCornerShape(12.dp),
+        value = lastName,
+        onValueChange = onLastNameChange,
+        label = {
+            Text("Doe")
+        },
+    )
+}
+
+@Composable
+fun NewEmailTextField(
+    newEmail: String,
+    onNewEmailChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        modifier = Modifier
+            .padding(bottom = 10.dp, start = 15.dp, end = 15.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        value = newEmail,
+        onValueChange = onNewEmailChange,
+        label = {
+            Text("Enter your email")
+        },
+    )
+}
+
+@Composable
+fun NewPasswordTextField(
+    newPassword: String,
+    onPasswordChange: (String) -> Unit
+) {
     var showPassword by remember { mutableStateOf(false) }
 
     OutlinedTextField(
-        value = password,
-        onValueChange = { password = it },
+        value = newPassword,
+        onValueChange = onPasswordChange,
         label = { Text("Enter your password") },
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 15.dp, end = 15.dp),
-
         // Скрытие пароля
         visualTransformation = if (showPassword) {
             VisualTransformation.None
         } else {
             PasswordVisualTransformation()
         },
-
         // Тип клавиатуры
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-
         // Иконка глаза справа
         trailingIcon = {
             IconButton(onClick = { showPassword = !showPassword }) {
@@ -264,6 +324,50 @@ fun PasswordTextFieldSignUp() {
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-        }
+        },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,  // Цвет текста при фокусе (например, синий)
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant  // Цвет текста без фокуса (например, серый)
+        )
+    )
+}
+@Composable
+fun ConfirmPasswordTextField(
+    confirmPassword: String,
+    onConfirmPasswordChange: (String) -> Unit
+) {
+
+    var showPassword by remember { mutableStateOf(false) }
+
+    OutlinedTextField(
+        value = confirmPassword,
+        onValueChange = onConfirmPasswordChange,
+        label = { Text("Enter your password") },
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 15.dp, end = 15.dp),
+        // Скрытие пароля
+        visualTransformation = if (showPassword) {
+            VisualTransformation.None
+        } else {
+            PasswordVisualTransformation()
+        },
+        // Тип клавиатуры
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        // Иконка глаза справа
+        trailingIcon = {
+            IconButton(onClick = { showPassword = !showPassword }) {
+                Icon(
+                    imageVector = if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                    contentDescription = "Show/hide password",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,  // Цвет текста при фокусе (например, синий)
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant  // Цвет текста без фокуса (например, серый)
+        )
     )
 }
