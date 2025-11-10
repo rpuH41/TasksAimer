@@ -1,9 +1,10 @@
 package com.liulkovich.tasksaimer.domain.entiity
 
-data class User(
-    val id: String = "",
-    val firstName: String?,
-    val lastName: String? = null,
-    val email: String,
-    //val userPhotoUrl: String? = null
+import com.google.firebase.firestore.PropertyName
+
+data class User @JvmOverloads constructor(
+    @PropertyName("id") val id: String = "",
+    @PropertyName("firstName") val firstName: String? = null,
+    @PropertyName("lastName") val lastName: String? = null,
+    @PropertyName("email") val email: String = ""
 )

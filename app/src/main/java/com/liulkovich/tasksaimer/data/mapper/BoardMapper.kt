@@ -3,20 +3,17 @@ package com.liulkovich.tasksaimer.data.mapper
 import com.liulkovich.tasksaimer.data.remote.BoardDTO
 import com.liulkovich.tasksaimer.domain.entiity.Board
 
-fun BoardDTO.toDomain(): Board {
+fun BoardDTO.toDomain(documentId: String): Board {
     return Board(
-        id = this.id ?: throw IllegalStateException("Board ID is required, cannot be null."),
-        title = this.title ?: throw IllegalStateException("Board Title is required, cannot be null."),
+        id = documentId,
+        title = this.title ?: throw IllegalStateException("Board Title is required"),
         description = this.description,
-        //imageUrl = this.imageUrl,
-        // tasksCount всегда имеет дефолт 0 в DTO, поэтому безопасно
         tasksCount = this.tasksCount,
         dueDate = this.dueDate,
-        ownerId = this.ownerId ?: throw IllegalStateException("Board Owner ID is required, cannot be null."),
-        // members имеет дефолт emptyList() в DTO, поэтому безопасно
+        ownerId = this.ownerId ?: throw IllegalStateException("Board Owner ID is required"),
         members = this.members,
-        // Если createdAt null, используем текущее время (безопасный дефолт)
-        createdAt = this.createdAt ?: System.currentTimeMillis()
+        createdAt = this.createdAt ?: System.currentTimeMillis(),
+        updatedAt = this.updatedAt ?: System.currentTimeMillis()
     )
 }
 

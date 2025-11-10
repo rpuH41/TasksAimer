@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,12 +51,22 @@ import com.liulkovich.tasksaimer.R
 fun SignInScreen(
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = hiltViewModel(),
-    onSignUpClick: () -> Unit
+    onSignUpClick: () -> Unit,
+    onBoardsClick: () -> Unit
     ){
 
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
     val isButtonEnabled by viewModel.isButtonEnabled.collectAsState()
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                AuthEffect.NavigateToHome -> onBoardsClick()
+            }
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -141,16 +153,28 @@ fun SignInScreen(
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
                 onClick = { viewModel.signIn() },
-                enabled = isButtonEnabled
+                enabled = isButtonEnabled && state !is AuthState.Loading
             ) {
-                Text(
-                    modifier = Modifier,
-                    text = "Sign In",
-                    style = TextStyle(
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                if (state is AuthState.Loading) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(20.dp)
                     )
+                } else {
+                    Text("Sign In", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                }
+            }
+
+            (state as? AuthState.Error)?.let { errorState ->
+                Text(
+                    text = errorState.message,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp, vertical = 8.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 14.sp
                 )
             }
             Row(

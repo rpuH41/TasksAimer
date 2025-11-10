@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface BoardRepository {
 
-    fun getAllBoards(): Flow<List<Board>> //Отображает весь список досок
+    fun getBoardsByUser(userId: String): Flow<List<Board>> //Отображает весь список досок
 
     suspend fun addBoard(board: Board) //добавление новой доски
 
@@ -13,7 +13,7 @@ interface BoardRepository {
 
     suspend fun editBoard(board: Board) //редактирование доски
 
-    fun searchBoardByTitle(title: String): Flow<List<Board>> //поиск по зоголовку
+    fun searchBoardByTitle(title: String, userId: String): Flow<List<Board>> //поиск по зоголовку
 
     //fun getSortedBoards(): Flow<List<Board>> в будущем релизовать
 

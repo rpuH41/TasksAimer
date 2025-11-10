@@ -8,7 +8,7 @@ import javax.inject.Inject
 class SearchBoardByTitleUseCase @Inject constructor(
     private val boardRepository: BoardRepository
 ) {
-    operator fun invoke(title: String): Flow<List<Board>> {
-        return boardRepository.searchBoardByTitle(title)
+    operator fun invoke(title: String, userId: String): Flow<List<Board>> {
+        return boardRepository.searchBoardByTitle(title, userId)
     }
 }

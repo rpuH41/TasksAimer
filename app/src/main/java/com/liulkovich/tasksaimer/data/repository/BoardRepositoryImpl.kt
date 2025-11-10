@@ -11,37 +11,38 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class BoardRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ): BoardRepository {
 
-    private val boardsCollection = firestore.collection("boards")
+    private val boardsCollection = firestore.collection("Boards")
 
-    override fun getAllBoards(): Flow<List<Board>> = callbackFlow {
-        val query = boardsCollection
+    override fun getBoardsByUser(userId: String): Flow<List<Board>> = callbackFlow {
+        val query = boardsCollection.whereArrayContains("memberIds", userId)
         val subscription = query.addSnapshotListener { snapshot, error ->
-
             if (error != null) {
                 close(error)
                 return@addSnapshotListener
             }
             if (snapshot != null) {
                 val boards = snapshot.documents.mapNotNull { document ->
-                    // Десериализация в DTO
                     val boardDto = document.toObject(BoardDTO::class.java)
-                    boardDto?.copy(id = document.id)?.toDomain()
+                    boardDto?.copy(id = document.id)?.toDomain(document.id)
                 }
                 trySend(boards)
             }
         }
-        awaitClose {
-            subscription.remove() // Отменяем слушатель Firestore!
-        }
+        awaitClose { subscription.remove() }
     }
 
     override suspend fun addBoard(board: Board) {
-        val boardDto = board.toDto()
+        val boardDto = board.toDto().copy(
+            ownerId = board.ownerId,
+            members = listOf(board.ownerId)
+        )
         boardsCollection.add(boardDto).await()
     }
 
@@ -58,10 +59,12 @@ class BoardRepositoryImpl @Inject constructor(
         boardsCollection.document(boardId).set(boardDto).await()
     }
 
-    override fun searchBoardByTitle(title: String): Flow<List<Board>> = callbackFlow {
+    override fun searchBoardByTitle(title: String, userId: String): Flow<List<Board>> = callbackFlow {
         val query = boardsCollection
+            .whereArrayContains("memberIds", userId)
             .whereGreaterThanOrEqualTo("title", title)
             .whereLessThanOrEqualTo("title", title + "\uf8ff")
+
         val subscription = query.addSnapshotListener { snapshot, error ->
             if (error != null) {
                 close(error)
@@ -70,13 +73,11 @@ class BoardRepositoryImpl @Inject constructor(
             if (snapshot != null) {
                 val boards = snapshot.documents.mapNotNull { document ->
                     val boardDto = document.toObject(BoardDTO::class.java)
-                    boardDto?.copy(id = document.id)?.toDomain()
+                    boardDto?.copy(id = document.id)?.toDomain(document.id)
                 }
                 trySend(boards)
             }
         }
-        awaitClose {
-            subscription.remove()
-        }
+        awaitClose { subscription.remove() }
     }
 }

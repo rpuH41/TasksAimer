@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 private val DarkColorScheme = darkColorScheme(
     primary = PrimaryBlue,
     secondary = SuccessGreen,
+    onSecondary = SuccessGreenAddSelected,
     tertiary = WarningOrange,
     error = ErrorRed,
 
@@ -21,13 +22,15 @@ private val DarkColorScheme = darkColorScheme(
     onBackground = OnSurfaceDark,
     onSurface = OnSurfaceDark,
     onSurfaceVariant = OnSurfaceVariantDark,
+
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = PrimaryBlue,           // Синий — главный акцент
-    secondary = SuccessGreen,        // Зелёный — успех
-    tertiary = WarningOrange,        // Оранжевый — в работе
-    error = ErrorRed,                // Красный — ошибки, срочность
+    primary = PrimaryBlue,                  // Синий — главный акцент
+    secondary = SuccessGreen,               // Зелёный — успех
+    onSecondary = SuccessGreenAddSelected,  // Мятный - Фильтры и кнопка +
+    tertiary = WarningOrange,               // Оранжевый — в работе
+    error = ErrorRed,                       // Красный — ошибки, срочность
 
     background = BackgroundLight,
     surface = SurfaceLight,

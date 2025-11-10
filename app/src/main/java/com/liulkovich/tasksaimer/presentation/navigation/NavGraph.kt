@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.liulkovich.tasksaimer.presentation.screen.auth.SignInScreen
 import com.liulkovich.tasksaimer.presentation.screen.auth.SignUpScreen
 import com.liulkovich.tasksaimer.presentation.screen.auth.WelcomeScreen
+import com.liulkovich.tasksaimer.presentation.screen.boards.BoardsScreen
 
 @Composable
 fun NavGraph(){
@@ -31,6 +32,12 @@ fun NavGraph(){
                 onSignUpClick = {
                     navController.navigate(Screen.SignUp.route)
                 },
+                onBoardsClick = {
+                    navController.navigate(Screen.Boards.route) {
+                        popUpTo(Screen.Welcome.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
         composable(Screen.SignUp.route){
@@ -39,6 +46,9 @@ fun NavGraph(){
                     navController.navigate(Screen.SignIn.route)
                 }
             )
+        }
+        composable( Screen.Boards.route ) {
+            BoardsScreen()
         }
     }
 }
@@ -50,5 +60,7 @@ sealed class Screen(val route: String) {
     data object SignIn: Screen("sign_in")
 
     data object SignUp: Screen("sign_up")
+
+    data object Boards: Screen("boards")
 
 }

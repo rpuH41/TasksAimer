@@ -6,5 +6,5 @@ import javax.inject.Inject
 class GetBoardsUseCase @Inject constructor(
     private val boardRepository: BoardRepository
 ) {
-    operator fun invoke() = boardRepository.getAllBoards()
+    operator fun invoke(userId: String) = boardRepository.getBoardsByUser(userId)
 }
