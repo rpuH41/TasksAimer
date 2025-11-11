@@ -6,12 +6,12 @@ import com.liulkovich.tasksaimer.domain.entiity.Board
 fun BoardDTO.toDomain(documentId: String): Board {
     return Board(
         id = documentId,
-        title = this.title ?: throw IllegalStateException("Board Title is required"),
+        title = this.title ?: "",  // ← ПУСТАЯ СТРОКА, НЕ throw!
         description = this.description,
-        tasksCount = this.tasksCount,
+        tasksCount = this.tasksCount ?: 0,
         dueDate = this.dueDate,
-        ownerId = this.ownerId ?: throw IllegalStateException("Board Owner ID is required"),
-        members = this.members,
+        ownerId = this.ownerId ?: "",  // ← ПУСТАЯ СТРОКА!
+        members = this.members ?: emptyList(),  // ← НЕ null!
         createdAt = this.createdAt ?: System.currentTimeMillis(),
         updatedAt = this.updatedAt ?: System.currentTimeMillis()
     )
@@ -25,7 +25,7 @@ fun Board.toDto(): BoardDTO {
     return BoardDTO(
         // Для новой доски id будет пустой строкой.
         // Мы передаем null, чтобы Firestore сгенерировал новый ID.
-        id = if (this.id.isNullOrBlank()) null else this.id,
+        //id = if (this.id.isNullOrBlank()) null else this.id,
         title = this.title,
         description = this.description,
         //imageUrl = this.imageUrl,

@@ -2,7 +2,7 @@ package com.liulkovich.tasksaimer.data.remote
 
 data class BoardDTO(
 
-    val id: String? = null,
+    //val id: String? = null,
     val title: String? = null,
     val description: String? = null,
     val imageUrl: String? = null,

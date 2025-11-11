@@ -8,6 +8,7 @@ import com.liulkovich.tasksaimer.presentation.screen.auth.SignInScreen
 import com.liulkovich.tasksaimer.presentation.screen.auth.SignUpScreen
 import com.liulkovich.tasksaimer.presentation.screen.auth.WelcomeScreen
 import com.liulkovich.tasksaimer.presentation.screen.boards.BoardsScreen
+import com.liulkovich.tasksaimer.presentation.screen.createboard.CreateBoardScreen
 
 @Composable
 fun NavGraph(){
@@ -48,7 +49,18 @@ fun NavGraph(){
             )
         }
         composable( Screen.Boards.route ) {
-            BoardsScreen()
+            BoardsScreen(
+                onCreateBoardClick = {
+                    navController.navigate(Screen.CreateBoard.route)
+                }
+            )
+        }
+        composable( Screen.CreateBoard.route ) {
+            CreateBoardScreen(
+                onFinished = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
@@ -62,5 +74,7 @@ sealed class Screen(val route: String) {
     data object SignUp: Screen("sign_up")
 
     data object Boards: Screen("boards")
+
+    data object CreateBoard: Screen("create_board")
 
 }

@@ -55,7 +55,8 @@ import com.liulkovich.tasksaimer.domain.entiity.Board
 @Composable
 fun BoardsScreen(
     modifier: Modifier = Modifier,
-    viewModel: BoardsViewModel = hiltViewModel()
+    viewModel: BoardsViewModel = hiltViewModel(),
+    onCreateBoardClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     println("Boards count: ${state.boards.size}")
@@ -63,7 +64,7 @@ fun BoardsScreen(
     Scaffold(
         floatingActionButton = {
         FloatingActionButton(
-            onClick = { },
+            onClick = { onCreateBoardClick() },
             containerColor = MaterialTheme.colorScheme.onSecondary,
             contentColor = MaterialTheme.colorScheme.surface,
             shape = CircleShape
@@ -134,7 +135,7 @@ fun BoardsScreen(
             } else {
                 itemsIndexed(
                     items = state.boards,
-                    key = { _, board -> board.id ?: board.hashCode() }  // ← КЛЮЧ!
+                    key = { _, board -> board.id }  // ← КЛЮЧ!
                 ) { index, board ->
                     BoardCard(
                         modifier = Modifier.padding(horizontal = 10.dp),
@@ -268,7 +269,7 @@ fun BoardCard(
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
-            .combinedClickable(  // ← ПЕРЕНЕСЕНО СЮДА
+            .combinedClickable(
                 onClick = { onNoteClick(board) },
                // onLongClick = { onLongClick(board) }
             )

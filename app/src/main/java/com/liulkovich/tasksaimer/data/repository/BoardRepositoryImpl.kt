@@ -16,52 +16,52 @@ import javax.inject.Singleton
 @Singleton
 class BoardRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
-): BoardRepository {
+) : BoardRepository {
 
     private val boardsCollection = firestore.collection("Boards")
 
     override fun getBoardsByUser(userId: String): Flow<List<Board>> = callbackFlow {
-        val query = boardsCollection.whereArrayContains("memberIds", userId)
+        val query = boardsCollection.whereArrayContains("members", userId)  // ← members!
+
         val subscription = query.addSnapshotListener { snapshot, error ->
             if (error != null) {
                 close(error)
                 return@addSnapshotListener
             }
-            if (snapshot != null) {
-                val boards = snapshot.documents.mapNotNull { document ->
-                    val boardDto = document.toObject(BoardDTO::class.java)
-                    boardDto?.copy(id = document.id)?.toDomain(document.id)
+
+            snapshot?.let {
+                val boards = it.documents.mapNotNull { doc ->
+                    val dto = doc.toObject(BoardDTO::class.java) ?: return@mapNotNull null
+                    dto.toDomain(doc.id)  // ← toDomain(doc.id), БЕЗ copy(id)
                 }
                 trySend(boards)
             }
         }
+
         awaitClose { subscription.remove() }
     }
 
     override suspend fun addBoard(board: Board) {
-        val boardDto = board.toDto().copy(
+        val dto = board.toDto().copy(
             ownerId = board.ownerId,
-            members = listOf(board.ownerId)
+            members = listOf(board.ownerId)  // ← members = [ownerId]
         )
-        boardsCollection.add(boardDto).await()
+        boardsCollection.add(dto).await()
     }
 
     override suspend fun deleteBoardById(boardId: String) {
-        boardsCollection.document(boardId)
-            .delete()
-            .await()
+        boardsCollection.document(boardId).delete().await()
     }
 
     override suspend fun editBoard(board: Board) {
-        val boardId = board.id ?:
-        throw IllegalArgumentException("Board ID cannot be null when editing a board.")
-        val boardDto = board.toDto()
-        boardsCollection.document(boardId).set(boardDto).await()
+        val boardId = board.id ?: throw IllegalArgumentException("Board ID cannot be null")
+        val dto = board.toDto()
+        boardsCollection.document(boardId).set(dto).await()
     }
 
     override fun searchBoardByTitle(title: String, userId: String): Flow<List<Board>> = callbackFlow {
         val query = boardsCollection
-            .whereArrayContains("memberIds", userId)
+            .whereArrayContains("members", userId)  // ← members!
             .whereGreaterThanOrEqualTo("title", title)
             .whereLessThanOrEqualTo("title", title + "\uf8ff")
 
@@ -70,14 +70,16 @@ class BoardRepositoryImpl @Inject constructor(
                 close(error)
                 return@addSnapshotListener
             }
-            if (snapshot != null) {
-                val boards = snapshot.documents.mapNotNull { document ->
-                    val boardDto = document.toObject(BoardDTO::class.java)
-                    boardDto?.copy(id = document.id)?.toDomain(document.id)
+
+            snapshot?.let {
+                val boards = it.documents.mapNotNull { doc ->
+                    val dto = doc.toObject(BoardDTO::class.java) ?: return@mapNotNull null
+                    dto.toDomain(doc.id)
                 }
                 trySend(boards)
             }
         }
+
         awaitClose { subscription.remove() }
     }
 }

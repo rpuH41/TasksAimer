@@ -3,27 +3,29 @@ package com.liulkovich.tasksaimer.presentation.screen.createboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.liulkovich.tasksaimer.domain.entiity.Board
+import com.liulkovich.tasksaimer.domain.usecase.auth.GetCurrentUserUseCase
 import com.liulkovich.tasksaimer.domain.usecase.board.AddBoardUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.net.URL
 import javax.inject.Inject
 
+
 @HiltViewModel
-class CreateBoardViewModel @Inject constructor(
-    private val addBoardUseCase: AddBoardUseCase
-): ViewModel(){
+    class CreateBoardViewModel @Inject constructor(
+        private val addBoardUseCase: AddBoardUseCase,
+        private val getCurrentUserUseCase: GetCurrentUserUseCase
+    ) : ViewModel() {
 
-    private val _state = MutableStateFlow<CreateBoardState>(CreateBoardState.Creation())
-    val state = _state.asStateFlow()
+        private val _state = MutableStateFlow<CreateBoardState>(CreateBoardState.Creation())
+        val state = _state.asStateFlow()
 
-    fun processCommand(command: CreateBoardCommand){
+        fun processCommand(command: CreateBoardCommand) {
 
-        when(command){
-            is CreateBoardCommand.AddImage -> {
+            /* is CreateBoardCommand.AddImage -> {
                 _state.update { previousState ->
                     if (previousState is CreateBoardState.Creation) {
                         previousState.copy(
@@ -33,8 +35,8 @@ class CreateBoardViewModel @Inject constructor(
                         previousState
                     }
                 }
-            }
-            is CreateBoardCommand.DeleteImage -> {
+            }*/
+            /*is CreateBoardCommand.DeleteImage -> {
                 _state.update { previousState ->
                     if (previousState is CreateBoardState.Creation) {
                         previousState.copy(imageUrl = null)
@@ -42,68 +44,60 @@ class CreateBoardViewModel @Inject constructor(
                         previousState
                     }
                 }
-            }
-            is CreateBoardCommand.InputTitle -> {
-                _state.update { previousState ->
-                    if (previousState is CreateBoardState.Creation) {
-                        previousState.copy(
-                            title = command.title
-                        )
-                    } else {
-                        previousState
-                    }
+            }*/
+            when (command) {
+                is CreateBoardCommand.InputTitle -> {
+                    updateState { copy(title = command.title) }
                 }
-            }
-            is CreateBoardCommand.InputDescription -> {
-                _state.update {previousState ->
-                    if (previousState is CreateBoardState.Creation) {
-                        previousState.copy(
-                            description = command.description
-                        )
-                    } else {
-                        previousState
-                    }
-
+                is CreateBoardCommand.InputDescription -> {
+                    updateState { copy(description = command.description) }
                 }
-            }
-            CreateBoardCommand.Back -> {
-                _state.update { CreateBoardState.Finished }
-            }
-            CreateBoardCommand.SaveBoard -> {
-                viewModelScope.launch {
-                    _state.update { previousState ->
-                        if (previousState is CreateBoardState.Creation) {
-                            val imageUrl = previousState.imageUrl
-                            val title = previousState.title
-                            val description = previousState.description
-                            addBoardUseCase(
-                                Board(
-                                title = title,
-                                description = description,
-                                //imageUrl = imageUrl,
-                                ownerId = "currentUserId",
-                                )
-                            )
-                            CreateBoardState.Finished
-                        } else {
-                            previousState
-                        }
-                    }
+                CreateBoardCommand.SaveBoard -> saveBoard()
+                CreateBoardCommand.Back -> {
+                    _state.value = CreateBoardState.Finished
                 }
             }
         }
+
+        private fun updateState(block: CreateBoardState.Creation.() -> CreateBoardState.Creation) {
+            _state.update { previous ->
+                if (previous is CreateBoardState.Creation) block(previous) else previous
+            }
+        }
+
+    private fun saveBoard() {
+        viewModelScope.launch {
+            val creation = _state.value as? CreateBoardState.Creation ?: return@launch
+
+            // Ждём ПЕРВЫЙ userId
+            val userId = getCurrentUserUseCase().firstOrNull() ?: return@launch
+
+            addBoardUseCase(
+                Board(
+                    id = userId,
+                    title = creation.title,
+                    description = creation.description,
+                    ownerId = userId,
+                    members = listOf(userId)
+                )
+            )
+
+            _state.value = CreateBoardState.Finished  // ← Только после сохранения!
+        }
     }
-}
+    }
+
+
 
 sealed interface CreateBoardCommand {
 
-    data class AddImage(val url: URL) : CreateBoardCommand
+    //data class AddImage(val url: URL) : CreateBoardCommand
 
     data class InputTitle(val title: String) : CreateBoardCommand
 
     data class InputDescription(val description: String) : CreateBoardCommand
 
-    data class DeleteImage(val index: Int) : CreateBoardCommand
+    //data class DeleteImage(val index: Int) : CreateBoardCommand
 
     data object SaveBoard  : CreateBoardCommand
 
@@ -115,10 +109,10 @@ sealed interface CreateBoardState {
         data class Creation(
             val title: String = "",
             val description: String = "",
-            val imageUrl: String? = null
+            //val imageUrl: String? = null
         ): CreateBoardState {
             val isSaveEnabled: Boolean
-                get() = title.isNotBlank() && imageUrl != null
+                get() = title.isNotBlank() //&& imageUrl != null
         }
 
         data object Finished: CreateBoardState

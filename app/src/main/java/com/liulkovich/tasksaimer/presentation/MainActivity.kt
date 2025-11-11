@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TasksAimerTheme{
                     NavGraph()
-                //BoardsScreen()
+                //CreateBoardScreen()
             }
         }
     }
