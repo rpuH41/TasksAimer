@@ -107,7 +107,6 @@ class TasksViewModel @Inject constructor(
     }
 }
 
-
 sealed interface TaskCommand{
 
     data class FilterByStatus(val boardId: String, val status: String): TaskCommand

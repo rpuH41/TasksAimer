@@ -69,12 +69,11 @@ import javax.inject.Inject
         viewModelScope.launch {
             val creation = _state.value as? CreateBoardState.Creation ?: return@launch
 
-            // Ждём ПЕРВЫЙ userId
             val userId = getCurrentUserUseCase().firstOrNull() ?: return@launch
 
             addBoardUseCase(
                 Board(
-                    id = userId,
+                    id = null,
                     title = creation.title,
                     description = creation.description,
                     ownerId = userId,

@@ -44,7 +44,8 @@ class BoardRepositoryImpl @Inject constructor(
     override suspend fun addBoard(board: Board) {
         val dto = board.toDto().copy(
             ownerId = board.ownerId,
-            members = listOf(board.ownerId)  // ← members = [ownerId]
+            members = listOf(board.ownerId),
+            titleLowercase = board.title.lowercase()
         )
         boardsCollection.add(dto).await()
     }
@@ -55,15 +56,17 @@ class BoardRepositoryImpl @Inject constructor(
 
     override suspend fun editBoard(board: Board) {
         val boardId = board.id ?: throw IllegalArgumentException("Board ID cannot be null")
-        val dto = board.toDto()
+        val dto = board.toDto().copy(
+            titleLowercase = board.title.lowercase()
+        )
         boardsCollection.document(boardId).set(dto).await()
     }
 
     override fun searchBoardByTitle(title: String, userId: String): Flow<List<Board>> = callbackFlow {
         val query = boardsCollection
             .whereArrayContains("members", userId)  // ← members!
-            .whereGreaterThanOrEqualTo("title", title)
-            .whereLessThanOrEqualTo("title", title + "\uf8ff")
+            .whereGreaterThanOrEqualTo("titleLowercase", title)
+            .whereLessThanOrEqualTo("titleLowercase", title + "\uf8ff")
 
         val subscription = query.addSnapshotListener { snapshot, error ->
             if (error != null) {

@@ -4,6 +4,7 @@ data class BoardDTO(
 
     //val id: String? = null,
     val title: String? = null,
+    val titleLowercase: String = "",
     val description: String? = null,
     val imageUrl: String? = null,
     val tasksCount: Int = 0,

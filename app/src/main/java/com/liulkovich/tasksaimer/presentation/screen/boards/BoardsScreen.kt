@@ -56,10 +56,10 @@ import com.liulkovich.tasksaimer.domain.entiity.Board
 fun BoardsScreen(
     modifier: Modifier = Modifier,
     viewModel: BoardsViewModel = hiltViewModel(),
-    onCreateBoardClick: () -> Unit
+    onCreateBoardClick: () -> Unit,
+    onOpenBoardClick: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    println("Boards count: ${state.boards.size}")
 
     Scaffold(
         floatingActionButton = {
@@ -69,7 +69,7 @@ fun BoardsScreen(
             contentColor = MaterialTheme.colorScheme.surface,
             shape = CircleShape
         ) {
-            Icon(Icons.Filled.Add, contentDescription = "Add task")
+            Icon(Icons.Filled.Add, contentDescription = "Add board")
         }
     },
         bottomBar = {
@@ -135,12 +135,12 @@ fun BoardsScreen(
             } else {
                 itemsIndexed(
                     items = state.boards,
-                    key = { _, board -> board.id }  // ← КЛЮЧ!
+                    key = { index, board -> board.id?: index }  // ← КЛЮЧ!
                 ) { index, board ->
                     BoardCard(
                         modifier = Modifier.padding(horizontal = 10.dp),
                         board = board,
-                        onNoteClick = { /* Открыть доску */ }
+                        onBoardClick = { onOpenBoardClick(board.title) }
                     )
                     if (index < state.boards.lastIndex) {
                         Spacer(modifier = Modifier.height(12.dp))
@@ -261,16 +261,17 @@ fun BoardCard(
     modifier: Modifier = Modifier,
     board: Board,
     //backgroundColor: Color,
-    onNoteClick: (Board) -> Unit,
+    onBoardClick: (Board) -> Unit,
     //onLongClick: (Board) -> Unit,
 ) {
     Column(
+
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
             .combinedClickable(
-                onClick = { onNoteClick(board) },
+                onClick = { onBoardClick(board) },
                // onLongClick = { onLongClick(board) }
             )
     ) {

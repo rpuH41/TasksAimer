@@ -41,9 +41,9 @@ class BoardsViewModel @Inject constructor(
 
                 query.flatMapLatest { input ->
                     if (input.isBlank()) {
-                        getBoardsUseCase(userId)  // ← userId!
+                        getBoardsUseCase(userId)
                     } else {
-                        searchBoardByTitleUseCase(input, userId)  // ← userId!
+                        searchBoardByTitleUseCase(input.lowercase(), userId)
                     }
                 }
             }
@@ -68,8 +68,11 @@ class BoardsViewModel @Inject constructor(
         viewModelScope.launch {
                 when(command) {
                     is BoardsCommand.InputSearchQuery -> {
-                        query.update { command.query.trim()
-                        }
+                        val newQuery = command.query
+                        query.update { newQuery }
+
+                        _state.update { it.copy(query = newQuery) }
+
                     }
                 }
             }
