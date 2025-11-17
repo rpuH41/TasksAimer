@@ -8,13 +8,17 @@ import com.liulkovich.tasksaimer.domain.usecase.board.GetBoardsUseCase
 import com.liulkovich.tasksaimer.domain.usecase.board.SearchBoardByTitleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,59 +28,61 @@ class BoardsViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getBoardsUseCase: GetBoardsUseCase,
     private val searchBoardByTitleUseCase: SearchBoardByTitleUseCase
-): ViewModel() {
+) : ViewModel() {
 
-    private val query = MutableStateFlow("")
+    private val userIdFlow = getCurrentUserUseCase()
+        .catch { emit(null) }
+        .shareIn(viewModelScope, SharingStarted.WhileSubscribed(5000), replay = 1)
+
+    private val searchQuery = MutableStateFlow("")
 
     private val _state = MutableStateFlow(BoardState())
     val state = _state.asStateFlow()
 
     init {
-        getCurrentUserUseCase()
+        userIdFlow
             .flatMapLatest { userId ->
                 if (userId == null) {
-                    // Пользователь не авторизован
-                    return@flatMapLatest flowOf(emptyList<Board>())
-                }
-
-                query.flatMapLatest { input ->
-                    if (input.isBlank()) {
-                        getBoardsUseCase(userId)
-                    } else {
-                        searchBoardByTitleUseCase(input.lowercase(), userId)
-                    }
+                    flowOf(emptyList<Board>())
+                } else {
+                    searchQuery
+                        .debounce(300)
+                        .distinctUntilChanged()
+                        .flatMapLatest { query ->
+                            if (query.isBlank()) {
+                                getBoardsUseCase(userId)
+                            } else {
+                                searchBoardByTitleUseCase(query.lowercase(), userId)
+                            }
+                        }
                 }
             }
-            .onStart {
-                _state.update { it.copy(isLoading = true, error = null) }
-            }
+            .onStart { _state.update { it.copy(isLoading = true) } } // лоадер только один раз!
             .catch { throwable ->
                 _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = throwable.message ?: "Unknown error loading boards."
-                    )
+                    it.copy(isLoading = false, error = throwable.message ?: "Error loading boards")
                 }
             }
             .onEach { boards ->
-                _state.update { it.copy(boards = boards, isLoading = false, error = null) }
+                _state.update {
+                    it.copy(
+                        boards = boards,
+                        isLoading = false,
+                        error = null
+                    )
+                }
             }
             .launchIn(viewModelScope)
     }
 
     fun processCommand(command: BoardsCommand) {
-        viewModelScope.launch {
-                when(command) {
-                    is BoardsCommand.InputSearchQuery -> {
-                        val newQuery = command.query
-                        query.update { newQuery }
-
-                        _state.update { it.copy(query = newQuery) }
-
-                    }
-                }
+        when (command) {
+            is BoardsCommand.InputSearchQuery -> {
+                searchQuery.value = command.query
+                _state.update { it.copy(query = command.query) }
             }
         }
+    }
 }
 
 sealed interface BoardsCommand {

@@ -1,5 +1,6 @@
 package com.liulkovich.tasksaimer.data.repository
 
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.liulkovich.tasksaimer.data.mapper.toDomain
 import com.liulkovich.tasksaimer.data.mapper.toDto
@@ -58,9 +59,24 @@ class TaskRepositoryImpl @Inject constructor(
         awaitClose { subscription.remove() }
     }
 
+//    override suspend fun addTask(task: Task) {
+//        val taskDto = task.toDto()
+//        tasksCollection.add(taskDto).await()
+//    }
+
     override suspend fun addTask(task: Task) {
-        val taskDto = task.toDto()
-        tasksCollection.add(taskDto).await()
+        val boardId = task.boardId ?: throw IllegalArgumentException("Task must have boardId")
+        val boardRef = firestore.collection("Boards").document(boardId)
+
+        firestore.runTransaction { transaction ->
+            // 1. Добавляем задачу
+            val taskDto = task.toDto()
+            val newTaskRef = tasksCollection.document()
+            transaction.set(newTaskRef, taskDto.copy(id = newTaskRef.id, boardId = boardId))
+
+            // 2. Атомарно увеличиваем счётчик в доске
+            transaction.update(boardRef, "tasksCount", FieldValue.increment(1))
+        }.await()
     }
 
     override fun searchTaskByTitle(boardId: String, title: String): Flow<List<Task>> = callbackFlow {
@@ -118,10 +134,25 @@ class TaskRepositoryImpl @Inject constructor(
         tasksCollection.document(taskId).set(taskDto).await()
     }
 
+//    override suspend fun deleteTask(taskId: String) {
+//        tasksCollection.document(taskId)
+//            .delete()
+//            .await()
+//    }
+
     override suspend fun deleteTask(taskId: String) {
-        tasksCollection.document(taskId)
-            .delete()
-            .await()
+        val taskDoc = tasksCollection.document(taskId).get().await()
+        val boardId = taskDoc.getString("boardId")
+            ?: throw IllegalArgumentException("Task has no boardId")
+
+        val boardRef = firestore.collection("Boards").document(boardId)
+
+        firestore.runTransaction { transaction ->
+            // Удаляем задачу
+            transaction.delete(tasksCollection.document(taskId))
+            // Уменьшаем счётчик
+            transaction.update(boardRef, "tasksCount", FieldValue.increment(-1))
+        }.await()
     }
 
     override suspend fun deleteAllTasksByBoardId(boardId: String) {

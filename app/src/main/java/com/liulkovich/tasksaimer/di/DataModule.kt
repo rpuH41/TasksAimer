@@ -7,6 +7,7 @@ import com.google.firebase.firestore.firestore
 import com.liulkovich.tasksaimer.data.repository.BoardRepositoryImpl
 import com.liulkovich.tasksaimer.data.repository.AuthRepositoryImpl
 import com.liulkovich.tasksaimer.data.repository.TaskRepositoryImpl
+import com.liulkovich.tasksaimer.domain.interactor.DateInputInteractor
 import com.liulkovich.tasksaimer.domain.repository.AuthRepository
 import com.liulkovich.tasksaimer.domain.repository.BoardRepository
 import com.liulkovich.tasksaimer.domain.repository.TaskRepository
@@ -44,6 +45,12 @@ interface DataModule {
         @Singleton
         fun provideFirebaseFirestore(): FirebaseFirestore {
             return Firebase.firestore
+        }
+
+        @Provides
+        @Singleton
+        fun provideDateInputInteractor(): DateInputInteractor {
+            return DateInputInteractor()
         }
 
         @Provides

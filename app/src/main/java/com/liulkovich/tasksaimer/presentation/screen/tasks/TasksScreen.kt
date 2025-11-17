@@ -48,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -69,14 +70,22 @@ import com.liulkovich.tasksaimer.domain.entiity.Task
 fun TasksScreen(
     modifier: Modifier = Modifier,
     viewModel: TasksViewModel = hiltViewModel(),
+    onCreateTaskClick: () -> Unit,
+    onBackTaskClick: () -> Unit,
+    boardId: String,
     boardTitle: String
 ){
+
+    LaunchedEffect(boardId) {
+        viewModel.processCommand(TaskCommand.SetBoardId(boardId))
+    }
+
     val state by viewModel.state.collectAsState()
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {  },
+                onClick = { onCreateTaskClick() },
                 containerColor = MaterialTheme.colorScheme.onSecondary,
                 contentColor = MaterialTheme.colorScheme.surface,
                 shape = CircleShape
@@ -87,6 +96,7 @@ fun TasksScreen(
         topBar = {
             TopAppTaskBar(
                 boardTitle = boardTitle,
+                onBackTaskClick = { onBackTaskClick() }
             )
         },
         bottomBar = {
@@ -141,7 +151,7 @@ fun TasksScreen(
                     key = { index, task -> task.id?: index }  // ← КЛЮЧ!
                 ) { index, task ->
                     TaskCard(
-                        modifier = Modifier.padding(horizontal = 10.dp),
+                        modifier = Modifier.padding( 10.dp),
                         task = task,
                         onDetailsClick = { /* Открыть задачу */ }
                     )
@@ -172,10 +182,11 @@ fun TaskCard(
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         modifier = modifier
-            .width(280.dp)
+            .fillMaxWidth()
+            //.width(280.dp)
             .height(100.dp)
     ) {
         Row(
@@ -289,7 +300,7 @@ private fun randomColor(seed: Int): Color {
 fun TopAppTaskBar(
     modifier: Modifier = Modifier,
     boardTitle: String,
-    //onBackTaskClick: () -> Unit
+    onBackTaskClick: () -> Unit
 
 ){
     @OptIn(ExperimentalMaterial3Api::class)
@@ -305,7 +316,7 @@ fun TopAppTaskBar(
             )
                },
         navigationIcon={
-            IconButton( onClick = {  } ) {
+            IconButton( onClick = { onBackTaskClick() } ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Back"

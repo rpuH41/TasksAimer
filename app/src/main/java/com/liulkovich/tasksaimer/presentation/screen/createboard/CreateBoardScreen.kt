@@ -1,5 +1,6 @@
 package com.liulkovich.tasksaimer.presentation.screen.createboard
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,12 +14,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Dashboard
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -27,6 +36,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -179,6 +191,7 @@ fun BoardDescriptionTextField(
     boardDescription: String,
     onBoardDescriptionChange: (String) -> Unit
 ) {
+
     OutlinedTextField(
         value = boardDescription,
         onValueChange = onBoardDescriptionChange,
@@ -190,4 +203,48 @@ fun BoardDescriptionTextField(
         shape = RoundedCornerShape(12.dp),
         maxLines = 13
     )
+}
+
+@Composable
+fun NavigationCreateTasksAimerBar(modifier: Modifier = Modifier) {
+
+    var selectedItem by remember { mutableIntStateOf(0) }
+    val items = listOf(
+        "Boards",
+        "Notifications",
+        "Profile"
+    )
+    val selectedIcons = listOf(
+        Icons.Filled.Dashboard,
+        Icons.Filled.Notifications,
+        Icons.Filled.Person
+    )
+    val unselectedIcons =
+        listOf(
+            Icons.Outlined.Dashboard,
+            Icons.Outlined.Notifications,
+            Icons.Outlined.Person
+        )
+    NavigationBar(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+        ,
+        containerColor = MaterialTheme.colorScheme.surface
+    ) {
+
+        items.forEachIndexed { index, item ->
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        if (selectedItem == index) selectedIcons[index] else unselectedIcons[index],
+                        contentDescription = item,
+                    )
+                },
+                label = { Text(item) },
+                selected = selectedItem == index,
+                onClick = { selectedItem = index },
+            )
+        }
+    }
 }

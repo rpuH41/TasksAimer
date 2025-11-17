@@ -57,7 +57,7 @@ fun BoardsScreen(
     modifier: Modifier = Modifier,
     viewModel: BoardsViewModel = hiltViewModel(),
     onCreateBoardClick: () -> Unit,
-    onOpenBoardClick: (String) -> Unit
+    onOpenBoardClick: (boardId: String, boardTitle: String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -140,7 +140,7 @@ fun BoardsScreen(
                     BoardCard(
                         modifier = Modifier.padding(horizontal = 10.dp),
                         board = board,
-                        onBoardClick = { onOpenBoardClick(board.title) }
+                        onBoardClick = { onOpenBoardClick(board.id ?: "", board.title) }
                     )
                     if (index < state.boards.lastIndex) {
                         Spacer(modifier = Modifier.height(12.dp))

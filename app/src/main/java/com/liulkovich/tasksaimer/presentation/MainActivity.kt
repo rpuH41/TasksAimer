@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.liulkovich.tasksaimer.presentation.navigation.NavGraph
+import com.liulkovich.tasksaimer.presentation.screen.createtask.CreateTaskScreen
 import com.liulkovich.tasksaimer.presentation.ui.theme.TasksAimerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -16,7 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TasksAimerTheme{
                     NavGraph()
-                //TasksScreen()
+                //CreateTaskScreen()
             }
         }
     }

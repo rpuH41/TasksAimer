@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.liulkovich.tasksaimer.domain.entiity.Priority
 import com.liulkovich.tasksaimer.domain.entiity.Status
 import com.liulkovich.tasksaimer.domain.entiity.Task
+import com.liulkovich.tasksaimer.domain.interactor.DateInputInteractor
 import com.liulkovich.tasksaimer.domain.usecase.task.AddTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateTaskViewModel @Inject constructor(
     private val addTaskUseCase: AddTaskUseCase,
+    private val dateInputInteractor: DateInputInteractor,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     // Получаем boardId
@@ -51,12 +53,15 @@ class CreateTaskViewModel @Inject constructor(
             }
 
             is CreateTaskCommand.DueDate -> {
-                _state.update{ previousState ->
-                    if (previousState is CreateTaskState.Creation) {
-                        previousState.copy(dueDate = command.dueDate)
-                    } else {
-                        previousState
-                    }
+                val formatted = dateInputInteractor.formatUserInput(command.dueDate)
+                val isValid = dateInputInteractor.isValid(formatted)
+                _state.update {
+                    if (it is CreateTaskState.Creation) {
+                        it.copy(
+                            dueDate = formatted,
+                            dueDateError = if (isValid) null else "Invalid date"
+                        )
+                    } else it
                 }
             }
             is CreateTaskCommand.DueTime -> {
@@ -145,13 +150,14 @@ sealed interface CreateTaskState{
         val title: String,
         val description: String? = null,
         val dueDate: String? = null,
+        val dueDateError: String? = null,
         val dueTime: String? = null,
         val priority: Priority = Priority.MEDIUM,
         val status: Status = Status.TODO,
         val assignedTo: List<String> = emptyList(),
     ): CreateTaskState {
         val isSaveEnabled: Boolean
-            get() = title.isNotBlank()
+            get() = title.isNotBlank() && dueDateError == null
     }
     data object Loading : CreateTaskState
 
