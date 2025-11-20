@@ -2,9 +2,6 @@
 
 package com.liulkovich.tasksaimer.presentation.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -51,16 +48,19 @@ fun TaskDueDateTextField(
             localText = formatted
             onTaskDueDateChange(formatted)
         },
-        label = { Text("MM/DD/YYYY") },
-        placeholder = { Text("MM/DD/YYYY") },
+        label = { Text("mm/dd/yyyy") },
+        placeholder = { Text("mm/dd/yyyy") },
+        singleLine = true,
         trailingIcon = {
             IconButton(onClick = { showDatePicker = true }) {
                 Icon(Icons.Default.DateRange, "Select date")
             }
         },
-        modifier = modifier.height(56.dp),
+
+        //contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
         shape = RoundedCornerShape(12.dp),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = modifier,
     )
 
     if (showDatePicker) {

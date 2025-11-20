@@ -1,11 +1,14 @@
 package com.liulkovich.tasksaimer.presentation.navigation
 
 import android.net.Uri
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.liulkovich.tasksaimer.presentation.screen.auth.SignInScreen
 import com.liulkovich.tasksaimer.presentation.screen.auth.SignUpScreen
@@ -16,12 +19,16 @@ import com.liulkovich.tasksaimer.presentation.screen.createtask.CreateTaskScreen
 import com.liulkovich.tasksaimer.presentation.screen.tasks.TasksScreen
 
 @Composable
-fun NavGraph() {
-    val navController = rememberNavController()
+fun NavGraph(
+    navController: NavHostController,
+    paddingValues: PaddingValues
+) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Welcome.route
+        startDestination = Screen.Welcome.route,
+        modifier = Modifier.padding(paddingValues)
+
     ) {
         composable(Screen.Welcome.route) {
             WelcomeScreen(
@@ -56,11 +63,22 @@ fun NavGraph() {
             )
         }
 
-        composable(Screen.CreateBoard.route) {
-            CreateBoardScreen(onFinished = { navController.popBackStack() })
+        composable(Screen.Notifications.route) {
+            //NotificationsScreen()
         }
 
-        // ← ПРАВИЛЬНЫЙ маршрут с boardId и boardTitle
+        composable(Screen.Profile.route) {
+            //ProfileScreen()
+        }
+
+        composable(Screen.CreateBoard.route) {
+            //CreateBoardScreen(onFinished = { navController.popBackStack() })
+            CreateBoardScreen(
+                onBackClick = { navController.popBackStack() },
+                onSaveClick = { navController.popBackStack() }
+            )
+        }
+
         composable(
             route = "tasks/{boardId}/{boardTitle}",
             arguments = listOf(
@@ -77,25 +95,37 @@ fun NavGraph() {
                 onCreateTaskClick = {
                     navController.navigate("create_task/$boardId")
                 },
-                onBackTaskClick = {
-                    navController.popBackStack()
-                }
+                onBackClick = { navController.popBackStack() }
             )
         }
         composable(
             route = "create_task/{boardId}",
             arguments = listOf(navArgument("boardId") { type = NavType.StringType })
-        ) {
-            CreateTaskScreen()
+        ) { backStackEntry ->
+            val boardId = backStackEntry.arguments!!.getString("boardId")!!
+
+            CreateTaskScreen(
+                boardId = boardId,
+                navController = navController
+            )
         }
     }
 }
 
 sealed class Screen(val route: String) {
+
     data object Welcome : Screen("welcome")
+
     data object SignIn : Screen("sign_in")
+
     data object SignUp : Screen("sign_up")
+
     data object Boards : Screen("boards")
+
+    data object Notifications : Screen("notifications")
+
+    data object Profile : Screen("profile")
+
     data object CreateBoard : Screen("create_board")
 
     data object Tasks : Screen("tasks/{boardId}/{boardTitle}") {

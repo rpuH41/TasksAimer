@@ -6,40 +6,27 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Dashboard
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,143 +41,68 @@ import com.liulkovich.tasksaimer.domain.entiity.Board
 
 @Composable
 fun BoardsScreen(
-    modifier: Modifier = Modifier,
-    viewModel: BoardsViewModel = hiltViewModel(),
-    onCreateBoardClick: () -> Unit,
-    onOpenBoardClick: (boardId: String, boardTitle: String) -> Unit
+    onCreateBoardClick: () -> Unit,                    // ← FAB теперь в MainActivity
+    onOpenBoardClick: (boardId: String, boardTitle: String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    val viewModel: BoardsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
-    Scaffold(
-        floatingActionButton = {
-        FloatingActionButton(
-            onClick = { onCreateBoardClick() },
-            containerColor = MaterialTheme.colorScheme.onSecondary,
-            contentColor = MaterialTheme.colorScheme.surface,
-            shape = CircleShape
-        ) {
-            Icon(Icons.Filled.Add, contentDescription = "Add board")
-        }
-    },
-        bottomBar = {
-            NavigationTasksAimerBar()
-        }
-        ) { innerPadding ->
-        LazyColumn(
-            contentPadding = innerPadding
-        ) {
-            item {
-                Title(
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp),
-                    text = "Boards"
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            item {
-                SearchBar(
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp),
-                    query = state.query,
-                    onQueryChange = {
-                        viewModel.processCommand(BoardsCommand.InputSearchQuery(it))
-                    }
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-            if (state.isLoading) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                    }
-                }
-            } else if (state.error != null) {
-                item {
-                    Text(
-                        text = state.error!!,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-            } else if (state.boards.isEmpty()) {
-                item {
-                    Text(
-                        text = "No boards found",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(32.dp),
-                        textAlign = TextAlign.Center
-                    )
-                }
-            } else {
-                itemsIndexed(
-                    items = state.boards,
-                    key = { index, board -> board.id?: index }  // ← КЛЮЧ!
-                ) { index, board ->
-                    BoardCard(
-                        modifier = Modifier.padding(horizontal = 10.dp),
-                        board = board,
-                        onBoardClick = { onOpenBoardClick(board.id ?: "", board.title) }
-                    )
-                    if (index < state.boards.lastIndex) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun NavigationTasksAimerBar(modifier: Modifier = Modifier) {
-
-    var selectedItem by remember { mutableIntStateOf(0) }
-    val items = listOf(
-        "Boards",
-        "Notifications",
-        "Profile"
-    )
-    val selectedIcons = listOf(
-        Icons.Filled.Dashboard,
-        Icons.Filled.Notifications,
-        Icons.Filled.Person
-    )
-    val unselectedIcons =
-        listOf(
-            Icons.Outlined.Dashboard,
-            Icons.Outlined.Notifications,
-            Icons.Outlined.Person
-        )
-    NavigationBar(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            ,
-        containerColor = MaterialTheme.colorScheme.surface
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
-        items.forEachIndexed { index, item ->
-            NavigationBarItem(
-                icon = {
-                    Icon(
-                        if (selectedItem == index) selectedIcons[index] else unselectedIcons[index],
-                        contentDescription = item,
-                    )
-                },
-                label = { Text(item) },
-                selected = selectedItem == index,
-                onClick = { selectedItem = index },
+        item { Spacer(Modifier.height(8.dp)) }
+
+        // Поиск
+        item {
+            SearchBar(
+                query = state.query,
+                onQueryChange = {
+                    viewModel.processCommand(BoardsCommand.InputSearchQuery(it))
+                }
             )
+        }
+
+        item { Spacer(Modifier.height(16.dp)) }
+
+        // Контент
+        if (state.isLoading) {
+            item {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                }
+            }
+        } else if (state.error != null) {
+            item {
+                Text(
+                    text = state.error!!,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        } else if (state.boards.isEmpty()) {
+            item {
+                Text(
+                    text = "No boards found",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.fillMaxWidth().padding(top = 64.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 18.sp
+                )
+            }
+        } else {
+            itemsIndexed(
+                items = state.boards,
+                key = { _, board -> board.id ?: board.hashCode() }
+            ) { _, board ->
+                BoardCard(
+                    board = board,
+                    onBoardClick = { onOpenBoardClick(board.id ?: "", board.title) }
+                )
+            }
         }
     }
 }

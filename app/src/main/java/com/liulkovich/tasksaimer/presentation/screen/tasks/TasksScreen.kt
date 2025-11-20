@@ -1,8 +1,10 @@
 package com.liulkovich.tasksaimer.presentation.screen.tasks
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,34 +19,22 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.HourglassBottom
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.EditCalendar
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -68,108 +58,73 @@ import com.liulkovich.tasksaimer.domain.entiity.Task
 
 @Composable
 fun TasksScreen(
-    modifier: Modifier = Modifier,
-    viewModel: TasksViewModel = hiltViewModel(),
-    onCreateTaskClick: () -> Unit,
-    onBackTaskClick: () -> Unit,
     boardId: String,
-    boardTitle: String
-){
+    boardTitle: String,
+    onCreateTaskClick: () -> Unit,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val viewModel: TasksViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(boardId) {
         viewModel.processCommand(TaskCommand.SetBoardId(boardId))
     }
 
-    val state by viewModel.state.collectAsState()
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item { Spacer(Modifier.height(8.dp)) }
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onCreateTaskClick() },
-                containerColor = MaterialTheme.colorScheme.onSecondary,
-                contentColor = MaterialTheme.colorScheme.surface,
-                shape = CircleShape
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = "Add task")
-            }
-        },
-        topBar = {
-            TopAppTaskBar(
-                boardTitle = boardTitle,
-                onBackTaskClick = { onBackTaskClick() }
-            )
-        },
-        bottomBar = {
-            NavigationTasksAimerBar()
+        item {
+            TaskFilter()
         }
-    ) { innerPadding ->
-        LazyColumn(
-            contentPadding = innerPadding
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-            item {
-                TaskFilter()
-            }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            if (state.isLoading) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                    }
-                }
-            } else if (state.error != null) {
-                item {
-                    Text(
-                        text = state.error!!,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-            } else if (state.tasks.isEmpty()) {
-                item {
-                    Text(
-                        text = "No tasks found",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(32.dp),
-                        textAlign = TextAlign.Center
-                    )
-                }
-            } else {
-                itemsIndexed(
-                    items = state.tasks,
-                    key = { index, task -> task.id?: index }  // ← КЛЮЧ!
-                ) { index, task ->
-                    TaskCard(
-                        modifier = Modifier.padding( 10.dp),
-                        task = task,
-                        onDetailsClick = { /* Открыть задачу */ }
-                    )
 
+        item { Spacer(Modifier.height(16.dp)) }
 
-                    /*BoardCard(
-                        modifier = Modifier.padding(horizontal = 10.dp),
-                        board = board,
-                        onNoteClick = { /* Открыть доску */ }
-                    )
-                    if (index < state.boards.lastIndex) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }*/
+        // Состояния
+        if (state.isLoading) {
+            item {
+                Box(modifier = Modifier.fillMaxWidth().padding(64.dp), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
+            }
+        } else if (state.error != null) {
+            item {
+                Text(
+                    text = state.error!!,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(32.dp)
+                )
+            }
+        } else if (state.tasks.isEmpty()) {
+            item {
+                Text(
+                    text = "No tasks yet",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(top = 80.dp)
+                )
+            }
+        } else {
+            itemsIndexed(
+                items = state.tasks,
+                key = { _, task -> task.id ?: task.id ?: task.hashCode() }
+            ) { _, task ->
+                TaskCard(
+                    task = task,
+                    onDetailsClick = { /* */ }
+                )
             }
         }
+
+        // Отступ снизу под FAB и BottomBar
+        item { Spacer(Modifier.height(100.dp)) }
     }
-
 }
 
 @Composable
@@ -340,78 +295,44 @@ fun TopAppTaskBar(
 }
 
 @Composable
-fun TaskFilter(
-    modifier: Modifier = Modifier,
-    //onFilterChanged: (String) -> Unit
+fun TaskFilter(modifier: Modifier = Modifier) {
+    var selectedIndex by remember { mutableIntStateOf(0) }
+    val filters = listOf("All", "To Do", "In Progress", "Done")
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        var selectedFilter by remember { mutableIntStateOf(0) }  // 0 = "All"
+        filters.forEachIndexed { index, label ->
+            val isSelected = index == selectedIndex
 
-        val filters = listOf("All", "To Do", "In Progress", "Done")
-
-        SingleChoiceSegmentedButtonRow(  // ← Single-select
-            modifier = modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(horizontal = 5.dp, vertical = 4.dp)
-        ) {
-            filters.forEachIndexed { index, filter ->
-                SegmentedButton(
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = index,
-                        count = filters.size  // ← Скругление углов
+            // Используем обычный TextButton + кастомный фон
+            TextButton(
+                onClick = { selectedIndex = index },
+                modifier = Modifier
+                    .height(40.dp)
+                    .background(
+                        color = if (isSelected)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(20.dp)
                     ),
-                    onClick = {
-                        selectedFilter = index
-                        //onFilterChanged(filter)
-                    },
-                    selected = index == selectedFilter,
-                    label = { Text(filter) }
+                shape = RoundedCornerShape(20.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = label,
+                    color = if (isSelected)
+                        MaterialTheme.colorScheme.onPrimary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                    fontSize = 14.sp
                 )
             }
         }
-}
-
-@Composable
-fun NavigationTasksAimerBar(modifier: Modifier = Modifier) {
-
-    var selectedItem by remember { mutableIntStateOf(0) }
-    val items = listOf(
-        "Boards",
-        "Notifications",
-        "Profile"
-    )
-    val selectedIcons = listOf(
-        Icons.Filled.Dashboard,
-        Icons.Filled.Notifications,
-        Icons.Filled.Person
-    )
-    val unselectedIcons =
-        listOf(
-            Icons.Outlined.Dashboard,
-            Icons.Outlined.Notifications,
-            Icons.Outlined.Person
-        )
-    NavigationBar(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-        ,
-        containerColor = MaterialTheme.colorScheme.surface
-    ) {
-
-        items.forEachIndexed { index, item ->
-            NavigationBarItem(
-                icon = {
-                    Icon(
-                        if (selectedItem == index) selectedIcons[index] else unselectedIcons[index],
-                        contentDescription = item,
-                    )
-                },
-                label = { Text(item) },
-                selected = selectedItem == index,
-                onClick = { selectedItem = index },
-            )
-        }
     }
 }
-
