@@ -19,24 +19,18 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.EditCalendar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -79,7 +73,10 @@ fun TasksScreen(
         item { Spacer(Modifier.height(8.dp)) }
 
         item {
-            TaskFilter()
+            TaskFilter(
+                viewModel = viewModel,
+                currentBoardId = boardId
+            )
         }
 
         item { Spacer(Modifier.height(16.dp)) }
@@ -252,52 +249,21 @@ private fun randomColor(seed: Int): Color {
 }
 
 @Composable
-fun TopAppTaskBar(
-    modifier: Modifier = Modifier,
-    boardTitle: String,
-    onBackTaskClick: () -> Unit
-
-){
-    @OptIn(ExperimentalMaterial3Api::class)
-    TopAppBar(
-
-        title= {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text = boardTitle,
-                fontSize = 22.sp,
-                        textAlign = TextAlign.Center
-            )
-               },
-        navigationIcon={
-            IconButton( onClick = { onBackTaskClick() } ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
-            }
-                       },
-        actions={
-            IconButton({ }) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Find task"
-                )
-            }
-        },
-        colors= TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = Color.LightGray,
-            navigationIconContentColor = Color.LightGray,
-            actionIconContentColor = Color.LightGray))
-
-}
-
-@Composable
-fun TaskFilter(modifier: Modifier = Modifier) {
+fun TaskFilter(
+    viewModel: TasksViewModel,
+    currentBoardId: String,
+    modifier: Modifier = Modifier
+) {
     var selectedIndex by remember { mutableIntStateOf(0) }
     val filters = listOf("All", "To Do", "In Progress", "Done")
+
+    // ← Маппим индекс → enum Status (или null для All)
+    val statusForIndex: Map<Int, Status?> = mapOf(
+        0 to null,              // All
+        1 to Status.TODO,
+        2 to Status.IN_PROGRESS,
+        3 to Status.DONE
+    )
 
     Row(
         modifier = modifier
@@ -308,9 +274,18 @@ fun TaskFilter(modifier: Modifier = Modifier) {
         filters.forEachIndexed { index, label ->
             val isSelected = index == selectedIndex
 
-            // Используем обычный TextButton + кастомный фон
             TextButton(
-                onClick = { selectedIndex = index },
+                onClick = {
+                    selectedIndex = index
+                    val status = statusForIndex[index]
+
+                    viewModel.processCommand(
+                        TaskCommand.FilterByStatus(
+                            boardId = currentBoardId,
+                            status = status?.name ?: ""  // "All" → пустая строка
+                        )
+                    )
+                },
                 modifier = Modifier
                     .height(40.dp)
                     .background(

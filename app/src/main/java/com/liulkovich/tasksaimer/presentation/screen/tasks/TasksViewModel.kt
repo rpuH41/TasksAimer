@@ -2,6 +2,7 @@ package com.liulkovich.tasksaimer.presentation.screen.tasks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.liulkovich.tasksaimer.domain.entiity.Status
 import com.liulkovich.tasksaimer.domain.entiity.Task
 import com.liulkovich.tasksaimer.domain.usecase.task.GetTasksForBoardUseCase
 import com.liulkovich.tasksaimer.domain.usecase.task.SearchTaskByTitleUseCase
@@ -60,8 +61,15 @@ class TasksViewModel @Inject constructor(
                     )
                 }
             }
-            .onEach {tasks ->
-                _state.update { it.copy(tasks = tasks, isLoading = false, error = null) }
+            .onEach { tasks ->
+                _state.update {
+                    it.copy(
+                        originalTasks = tasks,
+                        tasks = tasks,
+                        isLoading = false,
+                        error = null
+                    )
+                }
             }
             .launchIn(viewModelScope)
 
@@ -71,36 +79,35 @@ class TasksViewModel @Inject constructor(
         viewModelScope.launch {
             when(command){
                 is TaskCommand.FilterByStatus -> {
-                    filterTasksByStatusUseCase(command.boardId, command.status)
-                        .onStart {
-                            _state.update { it.copy(isLoading = true, error = null) }
+                    val allTasks = _state.value.originalTasks  // ← это ключ!
+
+                    val filteredTasks = if (command.status.isBlank()) {
+                        allTasks  // ← "All" — возвращаем ВСЁ
+                    } else {
+                        try {
+                            val statusEnum = Status.valueOf(command.status)
+                            allTasks.filter { it.status == statusEnum }
+                        } catch (e: Exception) {
+                            allTasks
                         }
-                        .catch { e ->
-                            _state.update {
-                                it.copy(
-                                    isLoading = false,
-                                    error = e.message ?: "Error filtering tasks."
-                                )
-                            }
-                        }
-                        .onEach { tasks ->
-                            _state.update {
-                                it.copy(
-                                    tasks = tasks,
-                                    isLoading = false,
-                                    error = null
-                                )
-                            }
-                        }
-                        .launchIn(viewModelScope)
+                    }
+
+                    _state.update {
+                        it.copy(
+                            tasks = filteredTasks,
+                            selectedFilter = if (command.status.isBlank()) null else command.status
+                        )
+                    }
                 }
 
                 is TaskCommand.InputSearchQuery -> {
                     query.update { command.query.trim() }
+                    _state.update { it.copy(selectedFilter = null) }
                 }
 
                 is TaskCommand.SetBoardId -> {
                     boardId.update { command.id }
+                    _state.update { it.copy(selectedFilter = null) }
                 }
             }
         }
@@ -118,7 +125,9 @@ sealed interface TaskCommand{
 
 data class TaskState(
     val query: String = "",
-    val tasks: List<Task> = listOf(),
+    val originalTasks: List<Task> = emptyList(),
+    val tasks: List<Task> = emptyList(),
+    val selectedFilter: String? = null,
     val isLoading: Boolean = true,
     val error: String? = null
 )
