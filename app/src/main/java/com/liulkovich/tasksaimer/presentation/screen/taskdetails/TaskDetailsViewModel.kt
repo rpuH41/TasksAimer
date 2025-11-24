@@ -65,7 +65,7 @@ class TaskDetailsViewModel @Inject constructor(
                 )
             }
             TaskDetailsCommand.MarkAsRework -> {
-                val newTask = task.copy(status = Status.TODO)
+                val newTask = task.copy(status = Status.IN_PROGRESS)
                 optimisticUpdateAndSave(
                     newTask = newTask,
                     successMessage = "Task returned to work",

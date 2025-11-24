@@ -16,6 +16,7 @@ import com.liulkovich.tasksaimer.presentation.screen.auth.WelcomeScreen
 import com.liulkovich.tasksaimer.presentation.screen.boards.BoardsScreen
 import com.liulkovich.tasksaimer.presentation.screen.createboard.CreateBoardScreen
 import com.liulkovich.tasksaimer.presentation.screen.createtask.CreateTaskScreen
+import com.liulkovich.tasksaimer.presentation.screen.taskdetails.TaskDetailsScreen
 import com.liulkovich.tasksaimer.presentation.screen.tasks.TasksScreen
 
 @Composable
@@ -95,7 +96,13 @@ fun NavGraph(
                 onCreateTaskClick = {
                     navController.navigate("create_task/$boardId")
                 },
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onOpenTaskDetailClick = { taskId, taskTitle ->
+                   // navController.navigate("taskDetails/$taskId?taskTitle=${Uri.encode(taskTitle)}")
+                    val route = Screen.TaskDetail.createRoute(taskId, taskTitle)
+                    navController.navigate(route)
+                }
+
             )
         }
         composable(
@@ -109,6 +116,29 @@ fun NavGraph(
                 navController = navController
             )
         }
+        composable(
+            route = "taskDetails/{taskId}?taskTitle={taskTitle}",
+            arguments = listOf(
+                navArgument("taskId") { type = NavType.StringType },
+                navArgument("taskTitle") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = true
+                }
+            )
+        ) { backStackEntry ->
+
+            val taskId = backStackEntry.arguments?.getString("taskId")!!
+            val taskTitle = backStackEntry.arguments?.getString("taskTitle") ?: ""
+
+            TaskDetailsScreen(
+                //navController = navController,
+                taskId = taskId,
+                taskTitle = taskTitle,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
     }
 }
 
@@ -134,5 +164,13 @@ sealed class Screen(val route: String) {
 
     data object CreateTask : Screen("create_task/{boardId}") {
         fun createRoute(boardId: String) = "create_task/$boardId"
+    }
+
+    data object TaskDetail : Screen("taskDetails") {
+
+        fun createRoute(taskId: String, taskTitle: String): String {
+            val encoded = Uri.encode(taskTitle)
+            return "taskDetails/$taskId?taskTitle=$encoded"
+        }
     }
 }

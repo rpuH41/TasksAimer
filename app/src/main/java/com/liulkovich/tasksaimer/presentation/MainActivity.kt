@@ -21,6 +21,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TasksAimerTheme {
+
+
                 val navController = rememberNavController()
 
                 Scaffold(
@@ -36,6 +38,8 @@ class MainActivity : ComponentActivity() {
                         paddingValues = innerPadding
                     )
                 }
+
+
             }
         }
     }

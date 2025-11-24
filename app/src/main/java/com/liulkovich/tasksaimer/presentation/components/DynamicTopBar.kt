@@ -65,20 +65,18 @@ fun DynamicTopBar(
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
                     IconButton(onClick = { /* Поиск */ }) {
-                        Icon(Icons.Default.Search, contentDescription = "Поиск")
+                        Icon(Icons.Default.Search, contentDescription = "Search")
                     }
                 }
             )
         }
 
-        // Экран создания задачи — магия здесь
         Screen.CreateTask.route.substringBefore("/{"), "create_task" -> {
-            // Автоматически получаем ViewModel текущего экрана
             val viewModel: CreateTaskViewModel = hiltViewModel(currentBackStackEntry!!)
 
             TopAppBar(
@@ -91,7 +89,7 @@ fun DynamicTopBar(
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.Close, contentDescription = "Закрыть")
+                        Icon(Icons.Default.Close, contentDescription = "Close")
                     }
                 },
                 actions = {
@@ -121,11 +119,31 @@ fun DynamicTopBar(
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.Close, contentDescription = "Закрыть")
+                        Icon(Icons.Default.Close, contentDescription = "Close")
                     }
                 },
                 actions = { Spacer(modifier = Modifier.width(48.dp)) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            )
+        }
+
+        Screen.TaskDetail.route -> {
+            TopAppBar(
+                title = {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "Development",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Close")
+                    }
+                }
             )
         }
 

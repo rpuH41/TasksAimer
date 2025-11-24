@@ -41,7 +41,7 @@ import com.liulkovich.tasksaimer.domain.entiity.Board
 
 @Composable
 fun BoardsScreen(
-    onCreateBoardClick: () -> Unit,                    // ← FAB теперь в MainActivity
+    onCreateBoardClick: () -> Unit,
     onOpenBoardClick: (boardId: String, boardTitle: String) -> Unit,
     modifier: Modifier = Modifier
 ) {

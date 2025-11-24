@@ -1,6 +1,7 @@
 package com.liulkovich.tasksaimer.presentation.screen.tasks
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,6 +57,7 @@ fun TasksScreen(
     boardTitle: String,
     onCreateTaskClick: () -> Unit,
     onBackClick: () -> Unit,
+    onOpenTaskDetailClick: (taskId: String, taskTitle: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: TasksViewModel = hiltViewModel()
@@ -114,12 +116,11 @@ fun TasksScreen(
             ) { _, task ->
                 TaskCard(
                     task = task,
-                    onDetailsClick = { /* */ }
+                    onDetailsClick = { onOpenTaskDetailClick(task.id ?: "", task.title) }
                 )
             }
         }
 
-        // Отступ снизу под FAB и BottomBar
         item { Spacer(Modifier.height(100.dp)) }
     }
 }
@@ -140,6 +141,7 @@ fun TaskCard(
             .fillMaxWidth()
             //.width(280.dp)
             .height(100.dp)
+            .clickable { onDetailsClick() }
     ) {
         Row(
             modifier = Modifier
@@ -163,7 +165,6 @@ fun TaskCard(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // Title + Status + Date/Time
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = task.title,
