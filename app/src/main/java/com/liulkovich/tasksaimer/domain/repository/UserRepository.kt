@@ -2,12 +2,17 @@ package com.liulkovich.tasksaimer.domain.repository
 
 import com.liulkovich.tasksaimer.domain.entiity.User
 import kotlinx.coroutines.flow.Flow
-import java.net.URI
 
 interface UserRepository {
 
-    fun getUser(userId: String): Flow<User>
+    fun getUserByEmail(userEmail: String): Flow<User?>
 
     suspend fun updateUser(user: User): Result<Unit>
+
+    suspend fun addContact(userId: String, contact: User): Result<Unit>
+
+    suspend fun removeContact(userId: String, contactId: String): Result<Unit>
+
+    fun getMyContacts(userId: String): Flow<List<User>>
 
 }

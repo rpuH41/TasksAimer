@@ -5,9 +5,8 @@ import com.liulkovich.tasksaimer.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetUserUseCase @Inject constructor(
+class GetMyContactsUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
-    operator fun invoke(userEmail: String): Flow<User?> =
-        userRepository.getUserByEmail(userEmail)
+    operator fun invoke(userId: String): Flow<List<User>> = userRepository.getMyContacts(userId)
 }

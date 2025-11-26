@@ -6,13 +6,11 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.liulkovich.tasksaimer.domain.entiity.User
 import com.liulkovich.tasksaimer.domain.repository.AuthRepository
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -26,7 +24,7 @@ class AuthRepositoryImpl @Inject constructor(
     private val auth = Firebase.auth
     private val users = firestore.collection("users")
 
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    //private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     override suspend fun signUp(user: User, password: String): Result<User> = try {
         val authResult = auth.createUserWithEmailAndPassword(user.email, password).await()
@@ -58,13 +56,13 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun getCurrentUser(): Flow<User?> = callbackFlow {
         val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            val firebaseUser = firebaseAuth.currentUser
-            if (firebaseUser != null) {
-                scope.launch {
+            val uid = firebaseAuth.currentUser?.uid
+            if (uid != null) {
+                launch(Dispatchers.IO) {
                     try {
-                        val snapshot = users.document(firebaseUser.uid).get().await()
-                        val user = snapshot.toObject(User::class.java)
-                        trySend(user?.copy(id = firebaseUser.uid))
+                        val doc = users.document(uid).get().await()
+                        val user = doc.toObject(User::class.java)?.copy(id = uid)
+                        trySend(user)
                     } catch (e: Exception) {
                         trySend(null)
                     }
@@ -73,10 +71,10 @@ class AuthRepositoryImpl @Inject constructor(
                 trySend(null)
             }
         }
-        auth.addAuthStateListener(listener)
-        awaitClose {
-            auth.removeAuthStateListener(listener)
-            scope.cancel() // отмена при закрытии
-        }
-    }.flowOn(Dispatchers.IO)
+
+        Firebase.auth.addAuthStateListener(listener)
+        awaitClose { Firebase.auth.removeAuthStateListener(listener) }
+    }
+        .flowOn(Dispatchers.IO)
+        .distinctUntilChanged()
 }

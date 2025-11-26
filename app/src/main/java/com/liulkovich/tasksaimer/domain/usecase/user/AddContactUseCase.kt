@@ -2,12 +2,11 @@ package com.liulkovich.tasksaimer.domain.usecase.user
 
 import com.liulkovich.tasksaimer.domain.entiity.User
 import com.liulkovich.tasksaimer.domain.repository.UserRepository
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetUserUseCase @Inject constructor(
+class AddContactUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
-    operator fun invoke(userEmail: String): Flow<User?> =
-        userRepository.getUserByEmail(userEmail)
+    suspend operator fun invoke(userId: String, contact: User): Result<Unit> =
+        userRepository.addContact(userId, contact)
 }
