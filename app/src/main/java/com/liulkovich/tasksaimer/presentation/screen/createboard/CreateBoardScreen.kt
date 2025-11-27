@@ -26,10 +26,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 @Composable
 fun CreateBoardScreen(
     onBackClick: () -> Unit,
+    viewModel: CreateBoardViewModel = hiltViewModel(),
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: CreateBoardViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     // Автоматический возврат после сохранения

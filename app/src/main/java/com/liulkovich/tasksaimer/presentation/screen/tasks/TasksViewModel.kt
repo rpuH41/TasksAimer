@@ -40,14 +40,12 @@ class TasksViewModel @Inject constructor(
                 _state.update { it.copy(query = q) }
             }
             .onStart {
-                // Включаем загрузку при старте или при новом запросе
                 _state.update { it.copy(isLoading = true, error = null) }
             }
             .flatMapLatest { (q, id) ->
                 if (id == null) {
                     emptyFlow()
                 } else if (q.isBlank()) {
-                    //  Если ID есть и нет запроса, читаем все задачи для этой доски
                     getTasksForBoardUseCase(id)
                 } else {
                     searchTaskByTitleUseCase(id,q)
@@ -79,10 +77,10 @@ class TasksViewModel @Inject constructor(
         viewModelScope.launch {
             when(command){
                 is TaskCommand.FilterByStatus -> {
-                    val allTasks = _state.value.originalTasks  // ← это ключ!
+                    val allTasks = _state.value.originalTasks
 
                     val filteredTasks = if (command.status.isBlank()) {
-                        allTasks  // ← "All" — возвращаем ВСЁ
+                        allTasks
                     } else {
                         try {
                             val statusEnum = Status.valueOf(command.status)

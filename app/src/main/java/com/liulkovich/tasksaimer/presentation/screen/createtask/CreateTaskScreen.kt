@@ -39,7 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.liulkovich.tasksaimer.domain.entiity.Priority
 import com.liulkovich.tasksaimer.presentation.components.TaskDueDateTextField
@@ -47,11 +47,11 @@ import com.liulkovich.tasksaimer.presentation.components.TaskDueTimeTextField
 
 @Composable
 fun CreateTaskScreen(
+    viewModel: CreateTaskViewModel = hiltViewModel(),
     boardId: String,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: CreateTaskViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
     // Колбэк для кнопки Save
     val onSaveClick: () -> Unit = {

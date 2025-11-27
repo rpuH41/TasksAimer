@@ -41,11 +41,11 @@ import com.liulkovich.tasksaimer.domain.entiity.Board
 
 @Composable
 fun BoardsScreen(
+    viewModel: BoardsViewModel = hiltViewModel(),
     onCreateBoardClick: () -> Unit,
     onOpenBoardClick: (boardId: String, boardTitle: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: BoardsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     LazyColumn(
