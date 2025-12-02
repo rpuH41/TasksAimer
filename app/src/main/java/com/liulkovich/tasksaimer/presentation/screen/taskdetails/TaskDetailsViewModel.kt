@@ -117,7 +117,6 @@ class TaskDetailsViewModel @Inject constructor(
     }
 }
 
-// Commands
 sealed interface TaskDetailsCommand {
     object MarkAsCompleted : TaskDetailsCommand
     object MarkAsRework : TaskDetailsCommand
@@ -125,14 +124,12 @@ sealed interface TaskDetailsCommand {
     object NavigateBack : TaskDetailsCommand
 }
 
-// States
 sealed interface TaskDetailsState {
     object Loading : TaskDetailsState
     data class Success(val task: Task) : TaskDetailsState
     data class Error(val message: String) : TaskDetailsState
 }
 
-// Effects
 sealed interface TaskDetailsEffect {
     data class ShowToast(val message: String) : TaskDetailsEffect
     data class ShowError(val message: String) : TaskDetailsEffect

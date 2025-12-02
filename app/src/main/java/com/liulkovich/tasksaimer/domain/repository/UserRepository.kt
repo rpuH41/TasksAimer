@@ -15,4 +15,8 @@ interface UserRepository {
 
     fun getMyContacts(userId: String): Flow<List<User>>
 
+    fun getUserById(userId: String): Flow<User?>
+
+    fun getAllUsers(): Flow<List<User>>
+
 }

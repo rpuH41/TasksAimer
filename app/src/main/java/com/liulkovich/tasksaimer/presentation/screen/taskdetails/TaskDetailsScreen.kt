@@ -58,7 +58,7 @@ private fun TaskDetailsContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0F172A))
+            //.background(Color(0xFF0F172A))
             .padding(16.dp)
     ) {
 
@@ -76,7 +76,7 @@ private fun TaskDetailsContent(
         // ---------- Due date ----------
         Box(
             modifier = Modifier
-                .background(Color(0xFF1E293B), RoundedCornerShape(16.dp))
+                .background(Color(0xFF1E293B),RoundedCornerShape(16.dp))
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             Text(
@@ -98,7 +98,7 @@ private fun TaskDetailsContent(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF1E293B), RoundedCornerShape(16.dp))
+               .background(Color(0xFF1E293B), RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
             Text(
@@ -204,7 +204,7 @@ private fun PersonItem(title: String, name: String?) {
                     Icon(
                         Icons.Default.Person,
                         contentDescription = null,
-                        tint = Color(0xFFCBD5E1)
+                       // tint = Color(0xFFCBD5E1)
                     )
                 }
                 Spacer(Modifier.width(12.dp))

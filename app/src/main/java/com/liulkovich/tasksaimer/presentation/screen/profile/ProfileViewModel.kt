@@ -1,5 +1,6 @@
 package com.liulkovich.tasksaimer.presentation.screen.profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.liulkovich.tasksaimer.domain.entiity.Board
@@ -8,7 +9,9 @@ import com.liulkovich.tasksaimer.domain.usecase.auth.GetCurrentUserUseCase
 import com.liulkovich.tasksaimer.domain.usecase.auth.LogoutUseCase
 import com.liulkovich.tasksaimer.domain.usecase.board.GetBoardsUseCase
 import com.liulkovich.tasksaimer.domain.usecase.user.AddContactUseCase
+import com.liulkovich.tasksaimer.domain.usecase.user.GetAllUserUseCase
 import com.liulkovich.tasksaimer.domain.usecase.user.GetMyContactsUseCase
+import com.liulkovich.tasksaimer.domain.usecase.user.GetUserByIdUseCase
 import com.liulkovich.tasksaimer.domain.usecase.user.RemoveContactUseCase
 import com.liulkovich.tasksaimer.domain.usecase.user.UpdateUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,13 +28,16 @@ class ProfileViewModel @Inject constructor(
     private val removeContactUseCase: RemoveContactUseCase,
     private val getBoardsUseCase: GetBoardsUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val updateUserUseCase: UpdateUserUseCase
+    private val updateUserUseCase: UpdateUserUseCase,
+    private val getUserByIdUseCase: GetUserByIdUseCase,
+    private val getAllUserUseCase: GetAllUserUseCase
     ): ViewModel(){
         private val _state = MutableStateFlow(ProfileScreenState())
         val state = _state.asStateFlow()
 
     init {
         observeCurrentUser()
+        observeAllUsers()
     }
 
     private fun observeCurrentUser() {
@@ -50,9 +56,17 @@ class ProfileViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     currentUserId = userId
                 )
-
+                observeUser(userId)
                 observeContacts(userId)
                 observeBoards(userId)
+            }
+        }
+    }
+
+    private fun observeUser(userId: String) {
+        viewModelScope.launch {
+            getUserByIdUseCase(userId).collect { user ->
+                _state.value = _state.value.copy(currentUser = user)
             }
         }
     }
@@ -60,7 +74,16 @@ class ProfileViewModel @Inject constructor(
     private fun observeContacts(userId: String) {
         viewModelScope.launch {
             getMyContactsUseCase(userId).collect { contacts ->
+                Log.d("PROFILE", "Contacts received: $contacts")
                 _state.value = _state.value.copy(contacts = contacts)
+            }
+        }
+    }
+
+    private fun observeAllUsers() {
+        viewModelScope.launch {
+            getAllUserUseCase().collect { users ->
+                _state.value = _state.value.copy(allUsers = users)
             }
         }
     }
@@ -68,6 +91,7 @@ class ProfileViewModel @Inject constructor(
     private fun observeBoards(userId: String) {
         viewModelScope.launch {
             getBoardsUseCase(userId).collect { boards ->
+                Log.d("BOARDS", "Boards received: $boards")
                 _state.value = _state.value.copy(boards = boards)
             }
         }
@@ -127,6 +151,7 @@ sealed interface ProfileCommand {
 data class ProfileScreenState(
     val currentUser: User? = null,
     val currentUserId: String? = null,
+    val allUsers: List<User> = emptyList(),
     val contacts: List<User> = emptyList(),
     val boards: List<Board> = emptyList(),
     val isLoading: Boolean = false,

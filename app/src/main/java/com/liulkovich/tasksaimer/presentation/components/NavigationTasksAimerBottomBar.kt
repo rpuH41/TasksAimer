@@ -23,8 +23,6 @@ fun NavigationTasksAimerBottomBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route?.substringBefore("/{")
 
-    // Показываем BottomBar на всех экранах ПОСЛЕ входа в аккаунт
-    // Скрываем только на welcome, sign_in, sign_up
     if (currentRoute !in setOf("welcome", "sign_in", "sign_up")) {
         NavigationBar(
             containerColor = MaterialTheme.colorScheme.surface
@@ -34,7 +32,7 @@ fun NavigationTasksAimerBottomBar(navController: NavHostController) {
                     selected = currentRoute == screen.route,
                     onClick = {
                         navController.navigate(screen.route) {
-                            // Не создаём кучу копий экранов
+
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }
@@ -64,7 +62,7 @@ fun NavigationTasksAimerBottomBar(navController: NavHostController) {
                             }
                         )
                     },
-                    alwaysShowLabel = false  // подпись появляется только у выбранной вкладки (красиво!)
+                    alwaysShowLabel = false
                 )
             }
         }

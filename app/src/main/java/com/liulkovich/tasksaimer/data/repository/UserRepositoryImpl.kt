@@ -85,4 +85,39 @@ class UserRepositoryImpl @Inject constructor(
 
         awaitClose { listenerRegistration.remove() }
     }
+
+    override fun getUserById(userId: String): Flow<User?> = callbackFlow {
+        val listenerRegistration = usersCollection
+            .document(userId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                val user = snapshot?.toObject(User::class.java)
+                trySend(user)
+            }
+
+        awaitClose { listenerRegistration.remove() }
+    }
+
+    override fun getAllUsers(): Flow<List<User>> = callbackFlow {
+        val listenerRegistration = usersCollection
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                val users = snapshot?.documents
+                    ?.mapNotNull { it.toObject(User::class.java) }
+                    ?: emptyList()
+
+                trySend(users)
+            }
+
+        awaitClose { listenerRegistration.remove() }
+    }
+
 }
