@@ -10,6 +10,10 @@ fun TaskDTO.toDomain(): Task {
     // Проверка обязательных полей. Если они null, это ошибка данных в БД.
     val domainId = id ?: throw IllegalStateException("Task ID cannot be null when mapping to Domain.")
     val domainBoardId = boardId ?: throw IllegalStateException("Task BoardID cannot be null when mapping to Domain.")
+    val domainOwnerId = ownerId
+        ?: com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+        ?: ""
+
 
     // Title обязателен в домене, но может прийти null. Устанавливаем безопасное значение.
     val domainTitle = title ?: "Untitled Task"
@@ -29,6 +33,7 @@ fun TaskDTO.toDomain(): Task {
         Status.TODO
     }
 
+
     return Task(
         id = domainId,
         boardId = domainBoardId,
@@ -41,7 +46,7 @@ fun TaskDTO.toDomain(): Task {
         assignedTo = assignedTo,
         // Если createdAt null, используем текущее время (для гарантии).
         createdAt = createdAt ?: System.currentTimeMillis(),
-        ownerId = "Заглушка",
+        ownerId = domainOwnerId,
         updatedAt = updatedAt ?: System.currentTimeMillis()
     )
 }

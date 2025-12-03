@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,13 +38,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.liulkovich.tasksaimer.domain.entiity.Board
 
 @Composable
 fun BoardsScreen(
-    viewModel: BoardsViewModel = hiltViewModel(),
     onCreateBoardClick: () -> Unit,
     onOpenBoardClick: (boardId: String, boardTitle: String) -> Unit,
+    viewModel: BoardsViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
@@ -56,7 +58,6 @@ fun BoardsScreen(
 
         item { Spacer(Modifier.height(8.dp)) }
 
-        // Поиск
         item {
             SearchBar(
                 query = state.query,
@@ -68,7 +69,6 @@ fun BoardsScreen(
 
         item { Spacer(Modifier.height(16.dp)) }
 
-        // Контент
         if (state.isLoading) {
             item {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -179,7 +179,13 @@ fun BoardCard(
     Column(
 
         modifier = modifier
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false
+            )
             .clip(RoundedCornerShape(16.dp))
+
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
             .combinedClickable(
@@ -198,7 +204,6 @@ fun BoardCard(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // ОПИСАНИЕ — ТОЛЬКО ЕСЛИ ЕСТЬ
         board.description?.takeIf { it.isNotBlank() }?.let { desc ->
             Spacer(modifier = Modifier.height(24.dp))
             Text(

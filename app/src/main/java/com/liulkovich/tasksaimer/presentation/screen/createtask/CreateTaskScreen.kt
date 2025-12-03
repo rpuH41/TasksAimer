@@ -47,13 +47,13 @@ import com.liulkovich.tasksaimer.presentation.components.TaskDueTimeTextField
 
 @Composable
 fun CreateTaskScreen(
-    viewModel: CreateTaskViewModel = hiltViewModel(),
     boardId: String,
     navController: NavHostController,
+    viewModel: CreateTaskViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
-    // Колбэк для кнопки Save
+
     val onSaveClick: () -> Unit = {
         viewModel.processCommand(CreateTaskCommand.SaveTask)
         navController.popBackStack()
@@ -78,7 +78,6 @@ fun CreateTaskScreen(
                             }
                         )
                     }
-                    // Description
                     item {
                         TaskDescriptionTextField(
                             taskDescription = creationState.description ?: "",
@@ -87,7 +86,6 @@ fun CreateTaskScreen(
                             }
                         )
                     }
-                    // Due Date + Time
                     item {
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Text(
@@ -120,7 +118,6 @@ fun CreateTaskScreen(
                             )
                         }
                     }
-                    // Priority
                     item {
                         Text(
                             text = "Priority",

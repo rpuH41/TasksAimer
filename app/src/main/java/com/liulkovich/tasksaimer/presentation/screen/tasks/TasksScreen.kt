@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -83,7 +84,6 @@ fun TasksScreen(
 
         item { Spacer(Modifier.height(16.dp)) }
 
-        // Состояния
         if (state.isLoading) {
             item {
                 Box(modifier = Modifier.fillMaxWidth().padding(64.dp), contentAlignment = Alignment.Center) {
@@ -134,6 +134,7 @@ fun TaskCard(
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -208,7 +209,6 @@ fun TaskCard(
                 }
             }
 
-            // Avatars (assignedTo)
             Row {
                 task.assignedTo.take(2).forEachIndexed { index, _ ->
                     Box(
@@ -233,7 +233,6 @@ fun TaskCard(
     }
 }
 
-// Вспомогательные функции (добавь внизу файла)
 private fun formatDueDateTime(dueDate: String?, dueTime: String?): String {
     if (dueDate == null && dueTime == null) return "No due date"
     if (dueDate == null) return dueTime ?: ""
@@ -295,8 +294,14 @@ fun TaskFilter(
                         else
                             MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                         shape = RoundedCornerShape(20.dp)
-                    ),
-                shape = RoundedCornerShape(20.dp),
+                    )
+                    .shadow(
+                        elevation = 0.01.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        clip = false
+                    )
+                    .clip(RoundedCornerShape(20.dp)),
+                //shape = RoundedCornerShape(20.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
                 Text(

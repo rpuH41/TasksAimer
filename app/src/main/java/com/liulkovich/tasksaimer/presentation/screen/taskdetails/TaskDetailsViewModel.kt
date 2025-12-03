@@ -5,14 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.liulkovich.tasksaimer.domain.entiity.Status
 import com.liulkovich.tasksaimer.domain.entiity.Task
+import com.liulkovich.tasksaimer.domain.entiity.User
 import com.liulkovich.tasksaimer.domain.usecase.task.DeleteTaskUseCase
 import com.liulkovich.tasksaimer.domain.usecase.task.EditTaskUseCase
 import com.liulkovich.tasksaimer.domain.usecase.task.GetTaskByIdUseCase
+import com.liulkovich.tasksaimer.domain.usecase.user.GetUserByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -25,6 +28,7 @@ class TaskDetailsViewModel @Inject constructor(
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val editTaskUseCase: EditTaskUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val getUserByIdUseCase: GetUserByIdUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -38,83 +42,145 @@ class TaskDetailsViewModel @Inject constructor(
     val effect = _effect.receiveAsFlow()
 
     init {
+        observeTask()
+    }
+
+    private fun observeTask() {
         getTaskByIdUseCase(taskId)
             .onStart { _state.value = TaskDetailsState.Loading }
-            .catch { _state.value = TaskDetailsState.Error(it.message ?: "Failed to load task") }
+            .catch { e ->
+                _state.value = TaskDetailsState.Error(e.message ?: "Failed to load task")
+            }
             .onEach { task ->
-                _state.value = task?.let { TaskDetailsState.Success(it) }
-                    ?: TaskDetailsState.Error("Task was deleted")
+                if (task == null) {
+                    _state.value = TaskDetailsState.Error("Task was deleted")
+                    return@onEach
+                }
+
+                println("TASK OWNER ID: ${task.ownerId}")  //не забыть удалить
+                println("TASK ASSIGNED TO: ${task.assignedTo}")
+
+                _state.value = TaskDetailsState.Success(
+                    task = task,
+                    creator = null,
+                    assignee = null
+                )
+
+                loadUsers(task)
             }
             .launchIn(viewModelScope)
     }
 
+    private fun loadUsers(task: Task) {
+        viewModelScope.launch {
+
+            val creator = getUserByIdUseCase(task.ownerId)
+                .catch { emit(null) }
+                .first()
+
+            val assigneeId = task.assignedTo.firstOrNull()
+
+            val assignee = if (assigneeId != null) {
+                getUserByIdUseCase(assigneeId)
+                    .catch { emit(null) }
+                    .first()
+            } else null
+
+            println("Creator loaded: $creator")
+            println("Assignee loaded: $assignee")
+
+            val currentTask = (state.value as? TaskDetailsState.Success)?.task ?: return@launch
+
+            _state.value = TaskDetailsState.Success(
+                task = currentTask,
+                creator = creator,
+                assignee = assignee
+            )
+        }
+    }
+
+
     fun processCommand(command: TaskDetailsCommand) {
-        val currentState = _state.value
-        if (currentState !is TaskDetailsState.Success) return
+        val currentState = _state.value as? TaskDetailsState.Success ?: return
         val task = currentState.task
-        val taskId = task.id ?: return
+        val id = task.id ?: return
 
         when (command) {
+
             TaskDetailsCommand.MarkAsCompleted -> {
-                val newTask = task.copy(status = Status.DONE)
-                optimisticUpdateAndSave(
-                    newTask = newTask,
-                    successMessage = "Task completed",
-                    errorMessage = "Failed to complete task",
-                    oldState = currentState
+                updateTask(
+                    newTask = task.copy(status = Status.DONE),
+                    successMsg = "Task completed",
+                    errorMsg = "Failed to complete task"
                 )
             }
+
             TaskDetailsCommand.MarkAsRework -> {
-                val newTask = task.copy(status = Status.IN_PROGRESS)
-                optimisticUpdateAndSave(
-                    newTask = newTask,
-                    successMessage = "Task returned to work",
-                    errorMessage = "Failed to return task",
-                    oldState = currentState
+                updateTask(
+                    newTask = task.copy(status = Status.IN_PROGRESS),
+                    successMsg = "Task returned to work",
+                    errorMsg = "Failed to return task"
                 )
             }
+
             TaskDetailsCommand.DeclineTask -> {
-                viewModelScope.launch {
-                    try {
-                        deleteTaskUseCase(taskId)
-                        sendEffect(TaskDetailsEffect.ShowToast("Task declined"))
-                        sendEffect(TaskDetailsEffect.NavigateBack)
-                    } catch (e: Exception) {
-                        sendEffect(TaskDetailsEffect.ShowError("Failed to decline task"))
-                    }
-                }
+                declineTask(id)
             }
+
             TaskDetailsCommand.NavigateBack -> {
                 sendEffect(TaskDetailsEffect.NavigateBack)
             }
         }
     }
 
-    private fun optimisticUpdateAndSave(
+    private fun updateTask(
         newTask: Task,
-        successMessage: String,
-        errorMessage: String,
-        oldState: TaskDetailsState.Success
+        successMsg: String,
+        errorMsg: String
     ) {
-        _state.value = TaskDetailsState.Success(newTask)
+        val oldState = _state.value as? TaskDetailsState.Success ?: return
+
+        _state.value = oldState.copy(task = newTask)
 
         viewModelScope.launch {
             try {
                 editTaskUseCase(newTask)
-                sendEffect(TaskDetailsEffect.ShowToast(successMessage))
+                sendEffect(TaskDetailsEffect.ShowToast(successMsg))
                 sendEffect(TaskDetailsEffect.NavigateBack)
             } catch (e: Exception) {
                 _state.value = oldState
-                sendEffect(TaskDetailsEffect.ShowError(errorMessage))
+                sendEffect(TaskDetailsEffect.ShowError(errorMsg))
+            }
+        }
+    }
+
+    private fun declineTask(taskId: String) {
+        viewModelScope.launch {
+            try {
+                deleteTaskUseCase(taskId)
+                sendEffect(TaskDetailsEffect.ShowToast("Task declined"))
+                sendEffect(TaskDetailsEffect.NavigateBack)
+            } catch (e: Exception) {
+                sendEffect(TaskDetailsEffect.ShowError("Failed to decline task"))
             }
         }
     }
 
     private fun sendEffect(effect: TaskDetailsEffect) {
-        viewModelScope.launch {
-            _effect.send(effect)
-        }
+        viewModelScope.launch { _effect.send(effect) }
     }
+}
+
+sealed interface TaskDetailsState {
+    object Loading : TaskDetailsState
+
+    data class Success(
+        val task: Task,
+        val creator: User?,
+        val assignee: User?
+    ) : TaskDetailsState
+
+    data class Error(val message: String) : TaskDetailsState
 }
 
 sealed interface TaskDetailsCommand {
@@ -122,12 +188,6 @@ sealed interface TaskDetailsCommand {
     object MarkAsRework : TaskDetailsCommand
     object DeclineTask : TaskDetailsCommand
     object NavigateBack : TaskDetailsCommand
-}
-
-sealed interface TaskDetailsState {
-    object Loading : TaskDetailsState
-    data class Success(val task: Task) : TaskDetailsState
-    data class Error(val message: String) : TaskDetailsState
 }
 
 sealed interface TaskDetailsEffect {

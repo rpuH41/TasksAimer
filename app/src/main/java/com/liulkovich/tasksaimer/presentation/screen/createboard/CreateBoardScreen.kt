@@ -32,7 +32,6 @@ fun CreateBoardScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    // Автоматический возврат после сохранения
     if (state is CreateBoardState.Finished) {
         LaunchedEffect(Unit) { onSaveClick() }
     }
@@ -45,7 +44,7 @@ fun CreateBoardScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
-                .padding(top = 16.dp, bottom = 100.dp), // отступ под BottomBar + FAB
+                .padding(top = 16.dp, bottom = 100.dp),
             //verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             //Spacer(Modifier.height(8.dp))

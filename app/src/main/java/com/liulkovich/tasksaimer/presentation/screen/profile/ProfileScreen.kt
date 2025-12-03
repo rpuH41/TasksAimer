@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -100,9 +101,9 @@ fun ProfileScreen(
         item {
             Column(
                 modifier = Modifier.fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
+                    //.clip(RoundedCornerShape(20.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .padding(16.dp)
+                    //.padding(16.dp)
             ) {
                 Text("My Boards", style = MaterialTheme.typography.titleMedium)
 
@@ -180,11 +181,17 @@ fun BoardCard(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false
+            )
             .clip(RoundedCornerShape(16.dp))
+            .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface)
             .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 14.dp)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+
     ) {
         Text(
             text = title,

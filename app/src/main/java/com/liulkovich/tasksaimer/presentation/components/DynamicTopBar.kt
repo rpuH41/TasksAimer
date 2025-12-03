@@ -3,15 +3,18 @@
 package com.liulkovich.tasksaimer.presentation.components
 
 import android.net.Uri
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,12 +49,16 @@ fun DynamicTopBar(
     when (currentRoute?.substringBefore("/{")) {
 
         Screen.Boards.route -> {
-            TopAppBar(
+            CenterAlignedTopAppBar(
+                modifier = Modifier
+                    .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
                 title = {
                     Text(
                         text = "Boards",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 28.sp
+                        fontSize = 28.sp,
+
+
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -67,6 +74,7 @@ fun DynamicTopBar(
                 ?.let { Uri.decode(it) } ?: "Tasks"
 
             TopAppBar(
+                modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
                 title = {
                     Text(
                         text = boardTitle,
@@ -91,6 +99,7 @@ fun DynamicTopBar(
             val viewModel: CreateTaskViewModel = hiltViewModel(currentBackStackEntry!!)
 
             TopAppBar(
+                modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
                 title = {
                     Text(
                         "Create Task",
@@ -118,6 +127,7 @@ fun DynamicTopBar(
 
         Screen.CreateBoard.route -> {
             TopAppBar(
+                modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
                 title = {
                     Box(modifier = Modifier.fillMaxWidth()) {
                         Text(
@@ -140,6 +150,7 @@ fun DynamicTopBar(
 
         Screen.TaskDetail.route -> {
             TopAppBar(
+                modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
                 title = {
                     Box(modifier = Modifier.fillMaxWidth()) {
                         Text(
@@ -147,6 +158,7 @@ fun DynamicTopBar(
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier.align(Alignment.Center)
+
                         )
                     }
                 },

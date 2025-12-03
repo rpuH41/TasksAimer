@@ -1,5 +1,7 @@
 package com.liulkovich.tasksaimer.presentation.components
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Notifications
@@ -14,10 +16,13 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.liulkovich.tasksaimer.presentation.navigation.Screen
+
 @Composable
 fun NavigationTasksAimerBottomBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -25,7 +30,15 @@ fun NavigationTasksAimerBottomBar(navController: NavHostController) {
 
     if (currentRoute !in setOf("welcome", "sign_in", "sign_up")) {
         NavigationBar(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface,
+            modifier = Modifier
+//                .shadow(
+//                    elevation = 4.dp,
+//                    shape = RoundedCornerShape(16.dp),
+//                    clip = false
+//                )
+//                .clip(RoundedCornerShape(16.dp))
+                .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
         ) {
             listOf(Screen.Boards, Screen.Notifications, Screen.Profile).forEach { screen ->
                 NavigationBarItem(

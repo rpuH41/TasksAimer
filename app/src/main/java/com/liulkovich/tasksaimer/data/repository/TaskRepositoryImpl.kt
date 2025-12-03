@@ -29,7 +29,7 @@ class TaskRepositoryImpl @Inject constructor(
             }
             if (snapshot != null) {
                 val tasks = snapshot.documents.mapNotNull { document ->
-                    // Десериализация в DTO
+
                     val taskDto = document.toObject(TaskDTO::class.java)
                     taskDto?.copy(id = document.id)?.toDomain()
                 }
@@ -37,7 +37,7 @@ class TaskRepositoryImpl @Inject constructor(
             }
         }
         awaitClose {
-            subscription.remove() // Отменяем слушатель Firestore!
+            subscription.remove()
         }
     }
 
@@ -69,12 +69,19 @@ class TaskRepositoryImpl @Inject constructor(
         val boardRef = firestore.collection("Boards").document(boardId)
 
         firestore.runTransaction { transaction ->
-            // 1. Добавляем задачу
-            val taskDto = task.toDto()
+            val baseTaskDto = task.toDto()
             val newTaskRef = tasksCollection.document()
-            transaction.set(newTaskRef, taskDto.copy(id = newTaskRef.id, boardId = boardId))
 
-            // 2. Атомарно увеличиваем счётчик в доске
+            val taskDtoToSave = baseTaskDto.copy(
+                id = newTaskRef.id,
+                boardId = boardId,
+                ownerId = task.ownerId
+                    ?: com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+                    ?: throw IllegalStateException("User not authenticated")
+            )
+
+            transaction.set(newTaskRef, taskDtoToSave)
+
             transaction.update(boardRef, "tasksCount", FieldValue.increment(1))
         }.await()
     }
@@ -130,7 +137,9 @@ class TaskRepositoryImpl @Inject constructor(
     override suspend fun editTask(task: Task) {
         val taskId = task.id ?:
         throw IllegalArgumentException("Task ID cannot be null when editing a board.")
-        val taskDto = task.toDto()
+        val taskDto = task.toDto().copy(
+            ownerId = task.ownerId
+        )
         tasksCollection.document(taskId).set(taskDto).await()
     }
 
