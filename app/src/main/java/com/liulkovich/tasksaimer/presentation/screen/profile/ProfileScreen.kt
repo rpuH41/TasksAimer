@@ -99,26 +99,42 @@ fun ProfileScreen(
         }
 
         item {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-                    //.clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    //.padding(16.dp)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
-                Text("My Boards", style = MaterialTheme.typography.titleMedium)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
 
-                Spacer(Modifier.height(8.dp))
-
-                state.boards.forEach { board ->
-                    BoardCard(
-                        title = board.title ?: "Untitled Board",
-                        subtitle = "${board.tasksCount ?: 0} active tasks",
-                        onClick = { onOpenBoardClick(board.id ?: "", board.title ?: "") }
+                    // Заголовок как у My Contacts
+                    Text(
+                        text = "My Boards",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 18.sp
                     )
+
                     Spacer(Modifier.height(8.dp))
+
+                    // Список карточек бордов
+                    state.boards.forEach { board ->
+                        BoardCard(
+                            title = board.title ?: "Untitled Board",
+                            subtitle = "${board.tasksCount ?: 0} active tasks",
+                            onClick = { onOpenBoardClick(board.id ?: "", board.title ?: "") }
+                        )
+                        Spacer(Modifier.height(8.dp))
+                    }
                 }
             }
         }
+
 
         item {
             Button(

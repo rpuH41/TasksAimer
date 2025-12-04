@@ -12,15 +12,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
@@ -92,14 +96,34 @@ fun BoardTitleTextField(
     boardTitle: String,
     onBoardTitleChange: (String) -> Unit
 ) {
-    OutlinedTextField(
-        value = boardTitle,
-        onValueChange = onBoardTitleChange,
-        label = { Text("e.g., Marketing Campaign") },
+    TextField(
+
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 10.dp),
-        shape = RoundedCornerShape(12.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false
+            ),
+         //   .padding(bottom = 10.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            errorContainerColor = MaterialTheme.colorScheme.surface
+        ),
+        value = boardTitle,
+        onValueChange = onBoardTitleChange,
+        placeholder = {
+            Text(
+                text = "e.g., Marketing Campaign",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+
     )
 }
 
@@ -109,15 +133,39 @@ fun BoardDescriptionTextField(
     onBoardDescriptionChange: (String) -> Unit
 ) {
 
-    OutlinedTextField(
-        value = boardDescription,
-        onValueChange = onBoardDescriptionChange,
-        label = { Text("Add details about the purpose of this board...") },
+    TextField(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
             .heightIn(min = 300.dp, max = 500.dp)
-            .padding(bottom = 10.dp),
-        shape = RoundedCornerShape(12.dp),
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false
+            ),
+        //   .padding(bottom = 10.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            errorContainerColor = MaterialTheme.colorScheme.surface
+        ),
+        value = boardDescription,
+        onValueChange = onBoardDescriptionChange,
+        placeholder = {
+            Text(
+                text = "Add details about the purpose of this board...",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        //label = { Text("Add details about the purpose of this board...") },
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .heightIn(min = 300.dp, max = 500.dp)
+//            .padding(bottom = 10.dp),
+//        shape = RoundedCornerShape(12.dp),
         maxLines = 13
     )
 }

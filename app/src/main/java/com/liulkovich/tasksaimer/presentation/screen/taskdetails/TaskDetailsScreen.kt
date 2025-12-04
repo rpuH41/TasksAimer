@@ -91,8 +91,6 @@ private fun TaskDetailsContent(
             )
         )
 
-        Spacer(Modifier.height(4.dp))
-
         Box(
             modifier = Modifier
                 .shadow(
@@ -112,8 +110,7 @@ private fun TaskDetailsContent(
             )
         }
 
-        Spacer(Modifier.height(16.dp))
-
+        Spacer(Modifier.height(12.dp))
 
         //Spacer(Modifier.height(8.dp))
         Column(
@@ -145,7 +142,7 @@ private fun TaskDetailsContent(
             )
         }
 
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(12.dp))
 
         InfoItem(
             title = "Status",

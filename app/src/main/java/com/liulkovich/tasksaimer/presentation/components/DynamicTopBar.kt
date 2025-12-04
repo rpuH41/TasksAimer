@@ -3,7 +3,6 @@
 package com.liulkovich.tasksaimer.presentation.components
 
 import android.net.Uri
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,7 +26,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,8 +50,8 @@ fun DynamicTopBar(
 
         Screen.Boards.route -> {
             CenterAlignedTopAppBar(
-                modifier = Modifier
-                    .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
+//                modifier = Modifier
+//                    .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
                 title = {
                     Text(
                         text = "Boards",
@@ -62,9 +62,17 @@ fun DynamicTopBar(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground
-                )
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+
+                ),
+                modifier = Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(16.dp),
+                        clip = false
+                    )
+                    .clip(RoundedCornerShape(16.dp))
             )
         }
 
@@ -74,7 +82,19 @@ fun DynamicTopBar(
                 ?.let { Uri.decode(it) } ?: "Tasks"
 
             TopAppBar(
-                modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+
+                    ),
+                modifier = Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(16.dp),
+                        clip = false
+                    )
+                    .clip(RoundedCornerShape(16.dp)),
+               // modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
                 title = {
                     Text(
                         text = boardTitle,
@@ -99,7 +119,19 @@ fun DynamicTopBar(
             val viewModel: CreateTaskViewModel = hiltViewModel(currentBackStackEntry!!)
 
             TopAppBar(
-                modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+
+                    ),
+                modifier = Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(16.dp),
+                        clip = false
+                    )
+                    .clip(RoundedCornerShape(16.dp)),
+                //modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
                 title = {
                     Text(
                         "Create Task",
@@ -127,7 +159,19 @@ fun DynamicTopBar(
 
         Screen.CreateBoard.route -> {
             TopAppBar(
-                modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+
+                    ),
+                modifier = Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(16.dp),
+                        clip = false
+                    )
+                    .clip(RoundedCornerShape(16.dp)),
+                //modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
                 title = {
                     Box(modifier = Modifier.fillMaxWidth()) {
                         Text(
@@ -144,13 +188,25 @@ fun DynamicTopBar(
                     }
                 },
                 actions = { Spacer(modifier = Modifier.width(48.dp)) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                //colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
 
         Screen.TaskDetail.route -> {
             TopAppBar(
-                modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+
+                    ),
+                modifier = Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(16.dp),
+                        clip = false
+                    )
+                    .clip(RoundedCornerShape(16.dp)),
+                //modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
                 title = {
                     Box(modifier = Modifier.fillMaxWidth()) {
                         Text(
@@ -172,6 +228,18 @@ fun DynamicTopBar(
 
         Screen.Profile.route -> {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+
+                    ),
+                modifier = Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(16.dp),
+                        clip = false
+                    )
+                    .clip(RoundedCornerShape(16.dp)),
                 title = {
                     Box(modifier = Modifier.fillMaxWidth()) {
                         Text(

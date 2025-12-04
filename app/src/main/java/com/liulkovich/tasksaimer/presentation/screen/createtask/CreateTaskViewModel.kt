@@ -3,11 +3,14 @@ package com.liulkovich.tasksaimer.presentation.screen.createtask
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.liulkovich.tasksaimer.domain.entiity.Priority
 import com.liulkovich.tasksaimer.domain.entiity.Status
 import com.liulkovich.tasksaimer.domain.entiity.Task
+import com.liulkovich.tasksaimer.domain.entiity.User
 import com.liulkovich.tasksaimer.domain.interactor.DateInputInteractor
 import com.liulkovich.tasksaimer.domain.usecase.task.AddTaskUseCase
+import com.liulkovich.tasksaimer.domain.usecase.user.GetMyContactsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,15 +22,31 @@ import javax.inject.Inject
 class CreateTaskViewModel @Inject constructor(
     private val addTaskUseCase: AddTaskUseCase,
     private val dateInputInteractor: DateInputInteractor,
+    private val getMyContactsUseCase: GetMyContactsUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    // Получаем boardId
+
     private val currentBoardId: String = savedStateHandle.get<String>("boardId")
         ?: throw IllegalStateException("boardId is required for CreateTaskViewModel.")
 
     private val _state = MutableStateFlow<CreateTaskState>(
         CreateTaskState.Creation(boardId = currentBoardId, title = ""))
     val state = _state.asStateFlow()
+
+    private val _myContacts = MutableStateFlow<List<User>>(emptyList())
+    val myContacts = _myContacts.asStateFlow()
+
+    init {
+        loadMyContacts()
+    }
+
+    private fun loadMyContacts() {
+        viewModelScope.launch {
+            getMyContactsUseCase().collect { contacts ->
+                _myContacts.value = contacts
+            }
+        }
+    }
 
     fun processCommand(command: CreateTaskCommand) {
         when(command){
@@ -100,9 +119,10 @@ class CreateTaskViewModel @Inject constructor(
                     val currentState = _state.value
                     if (currentState is CreateTaskState.Creation && currentState.isSaveEnabled) {
 
-                        _state.update { CreateTaskState.Loading } //  показываем индикатор
+                        _state.update { CreateTaskState.Loading }
 
-                        val currentUserId = "user123"
+                        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+                            ?: throw IllegalStateException("User not authenticated")
                         val taskToSave = Task(
                             id = null,
                             boardId = currentState.boardId,
@@ -117,7 +137,7 @@ class CreateTaskViewModel @Inject constructor(
                         )
 
                         addTaskUseCase(taskToSave)
-                        _state.update { CreateTaskState.Finished } // ✅ завершили
+                        _state.update { CreateTaskState.Finished }
                     }
                 }
             }

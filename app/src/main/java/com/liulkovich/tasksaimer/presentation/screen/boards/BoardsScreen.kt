@@ -1,7 +1,6 @@
 package com.liulkovich.tasksaimer.presentation.screen.boards
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,7 +37,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.liulkovich.tasksaimer.domain.entiity.Board
 
 @Composable
@@ -116,12 +114,14 @@ fun SearchBar(
     TextField(
         modifier = modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surface)
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                shape = RoundedCornerShape(10.dp)
-            ),
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false
+            )
+            ,
         value = query,
         onValueChange = onQueryChange,
         placeholder = {
@@ -144,7 +144,7 @@ fun SearchBar(
                 tint = MaterialTheme.colorScheme.onSurface
             )
         },
-        shape = RoundedCornerShape(10.dp)
+        //shape = RoundedCornerShape(10.dp)
     )
 }
 

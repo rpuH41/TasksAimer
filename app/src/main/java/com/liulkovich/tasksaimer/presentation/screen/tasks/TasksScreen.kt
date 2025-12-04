@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.outlined.EditCalendar
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -42,7 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -127,9 +127,9 @@ fun TasksScreen(
 
 @Composable
 fun TaskCard(
-    modifier: Modifier = Modifier,
     task: Task,
-    onDetailsClick: () -> Unit
+    onDetailsClick: () -> Unit,
+    modifier: Modifier = Modifier
 
 ) {
     Card(
@@ -145,7 +145,7 @@ fun TaskCard(
             .clickable { onDetailsClick() }
     ) {
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -278,38 +278,29 @@ fun TaskFilter(
                 onClick = {
                     selectedIndex = index
                     val status = statusForIndex[index]
-
                     viewModel.processCommand(
                         TaskCommand.FilterByStatus(
                             boardId = currentBoardId,
-                            status = status?.name ?: ""  // "All" → пустая строка
+                            status = status?.name ?: ""
                         )
                     )
                 },
-                modifier = Modifier
-                    .height(40.dp)
-                    .background(
-                        color = if (isSelected)
-                            MaterialTheme.colorScheme.primary
-                        else
-                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                        shape = RoundedCornerShape(20.dp)
-                    )
-                    .shadow(
-                        elevation = 0.01.dp,
-                        shape = RoundedCornerShape(20.dp),
-                        clip = false
-                    )
-                    .clip(RoundedCornerShape(20.dp)),
-                //shape = RoundedCornerShape(20.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp)
+                colors = ButtonDefaults.textButtonColors(
+                    containerColor = if (isSelected)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.surface,
+                    contentColor = if (isSelected)
+                        MaterialTheme.colorScheme.onPrimary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                ),
+                shape = RoundedCornerShape(20.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                modifier = Modifier.height(40.dp)
             ) {
                 Text(
                     text = label,
-                    color = if (isSelected)
-                        MaterialTheme.colorScheme.onPrimary
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
                     fontSize = 14.sp
                 )

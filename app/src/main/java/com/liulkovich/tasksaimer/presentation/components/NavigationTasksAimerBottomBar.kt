@@ -1,6 +1,5 @@
 package com.liulkovich.tasksaimer.presentation.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
@@ -17,6 +16,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -32,13 +33,13 @@ fun NavigationTasksAimerBottomBar(navController: NavHostController) {
         NavigationBar(
             containerColor = MaterialTheme.colorScheme.surface,
             modifier = Modifier
-//                .shadow(
-//                    elevation = 4.dp,
-//                    shape = RoundedCornerShape(16.dp),
-//                    clip = false
-//                )
-//                .clip(RoundedCornerShape(16.dp))
-                .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
+                .shadow(
+                    elevation = 4.dp,
+                    shape = RoundedCornerShape(16.dp),
+                    clip = false
+                )
+                .clip(RoundedCornerShape(16.dp))
+               // .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
         ) {
             listOf(Screen.Boards, Screen.Notifications, Screen.Profile).forEach { screen ->
                 NavigationBarItem(

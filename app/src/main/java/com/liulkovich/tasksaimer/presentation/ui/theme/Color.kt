@@ -11,7 +11,7 @@ val ErrorRed = Color(0xFFEF4444)         // To Do, Decline, Logout
 
 // === Цвета фона и поверхностей ===
 val BackgroundLight = Color(0xFFFFFFFF)
-val SurfaceLight = Color(0xFFF8FAFC)
+val SurfaceLight = Color(0xFFE2E8F0) //Фон вьюшек
 val SurfaceVariantLight = Color(0xF7F6F8F8)  // Карточки в профиле
 
 // === Текст и иконки ===

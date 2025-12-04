@@ -73,7 +73,7 @@ class ProfileViewModel @Inject constructor(
 
     private fun observeContacts(userId: String) {
         viewModelScope.launch {
-            getMyContactsUseCase(userId).collect { contacts ->
+            getMyContactsUseCase().collect { contacts ->
                 Log.d("PROFILE", "Contacts received: $contacts")
                 _state.value = _state.value.copy(contacts = contacts)
             }
