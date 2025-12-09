@@ -3,40 +3,32 @@
 package com.liulkovich.tasksaimer.presentation.components
 
 import android.net.Uri
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.liulkovich.tasksaimer.presentation.navigation.Screen
-import com.liulkovich.tasksaimer.presentation.screen.createtask.CreateTaskCommand
 import com.liulkovich.tasksaimer.presentation.screen.createtask.CreateTaskViewModel
 
 @Composable
@@ -81,12 +73,11 @@ fun DynamicTopBar(
                 ?.getString("boardTitle")
                 ?.let { Uri.decode(it) } ?: "Tasks"
 
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onBackground,
-
-                    ),
+                ),
                 modifier = Modifier
                     .shadow(
                         elevation = 4.dp,
@@ -98,8 +89,9 @@ fun DynamicTopBar(
                 title = {
                     Text(
                         text = boardTitle,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
                     )
                 },
                 navigationIcon = {
@@ -107,23 +99,22 @@ fun DynamicTopBar(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                actions = {
+                /*actions = {
                     IconButton(onClick = { /* Поиск */ }) {
                         Icon(Icons.Default.Search, contentDescription = "Search")
                     }
-                }
+                }*/
             )
         }
 
         Screen.CreateTask.route.substringBefore("/{"), "create_task" -> {
             val viewModel: CreateTaskViewModel = hiltViewModel(currentBackStackEntry!!)
 
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onBackground,
-
-                    ),
+                ),
                 modifier = Modifier
                     .shadow(
                         elevation = 4.dp,
@@ -135,8 +126,8 @@ fun DynamicTopBar(
                 title = {
                     Text(
                         "Create Task",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
                     )
                 },
                 navigationIcon = {
@@ -144,26 +135,16 @@ fun DynamicTopBar(
                         Icon(Icons.Default.Close, contentDescription = "Close")
                     }
                 },
-                actions = {
-                    TextButton(
-                        onClick = {
-                            viewModel.processCommand(CreateTaskCommand.SaveTask)
-                            navController.popBackStack()
-                        }
-                    ) {
-                        Text("Save", color = MaterialTheme.colorScheme.primary)
-                    }
-                }
+
             )
         }
 
         Screen.CreateBoard.route -> {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onBackground,
-
-                    ),
+                ),
                 modifier = Modifier
                     .shadow(
                         elevation = 4.dp,
@@ -173,14 +154,12 @@ fun DynamicTopBar(
                     .clip(RoundedCornerShape(16.dp)),
                 //modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
                 title = {
-                    Box(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "New Board",
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.align(Alignment.Center)
+                            fontWeight = FontWeight.Bold,
                         )
-                    }
+
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -193,12 +172,11 @@ fun DynamicTopBar(
         }
 
         Screen.TaskDetail.route -> {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onBackground,
-
-                    ),
+                ),
                 modifier = Modifier
                     .shadow(
                         elevation = 4.dp,
@@ -208,15 +186,13 @@ fun DynamicTopBar(
                     .clip(RoundedCornerShape(16.dp)),
                 //modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
                 title = {
-                    Box(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "Development",
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.align(Alignment.Center)
+                            fontWeight = FontWeight.Bold,
 
                         )
-                    }
+
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -227,12 +203,11 @@ fun DynamicTopBar(
         }
 
         Screen.Profile.route -> {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onBackground,
-
-                    ),
+                ),
                 modifier = Modifier
                     .shadow(
                         elevation = 4.dp,
@@ -241,25 +216,23 @@ fun DynamicTopBar(
                     )
                     .clip(RoundedCornerShape(16.dp)),
                 title = {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "Profile",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
+                    Text(
+                        text = "Profile",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Close")
-                    }
+                   }
                 },
-                actions = {
-                    IconButton(onClick = { /* Поиск */ }) {
-                        Icon(Icons.Default.Settings, contentDescription = "Search")
-                    }
+
+            /*actions = {
+                IconButton(onClick = { /* Поиск */ }) {
+                    Icon(Icons.Default.Settings, contentDescription = "Search")
                 }
+            }*/
 
             )
         }

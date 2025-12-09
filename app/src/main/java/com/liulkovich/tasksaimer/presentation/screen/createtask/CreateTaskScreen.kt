@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -186,7 +187,25 @@ fun CreateTaskScreen(
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
-                    item { Spacer(Modifier.height(80.dp)) }
+                    //item { Spacer(Modifier.height(80.dp)) }
+
+                    item {
+                        Spacer(Modifier.height(20.dp))
+
+                        Button(
+                            onClick = {
+                                viewModel.processCommand(CreateTaskCommand.SaveTask)
+                                navController.popBackStack()
+                                      },
+                            enabled = creationState.isSaveEnabled,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text("Create Task", fontWeight = FontWeight.Medium)
+                        }
+                    }
                 }
             }
             else -> {

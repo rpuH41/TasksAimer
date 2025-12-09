@@ -30,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -98,7 +97,7 @@ fun BoardsScreen(
             ) { _, board ->
                 BoardCard(
                     board = board,
-                    onBoardClick = { onOpenBoardClick(board.id ?: "", board.title) }
+                    onBoardClick = { id, title -> onOpenBoardClick(id, title) }
                 )
             }
         }
@@ -115,7 +114,7 @@ fun SearchBar(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surface)
+            //.background(MaterialTheme.colorScheme.surface)
             .shadow(
                 elevation = 4.dp,
                 shape = RoundedCornerShape(16.dp),
@@ -134,13 +133,13 @@ fun SearchBar(
         colors = TextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.surface,
             unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            errorContainerColor = MaterialTheme.colorScheme.surface
         ),
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "Search notes",
+                contentDescription = "Search boards",
                 tint = MaterialTheme.colorScheme.onSurface
             )
         },
@@ -173,7 +172,7 @@ fun BoardCard(
     modifier: Modifier = Modifier,
     board: Board,
     //backgroundColor: Color,
-    onBoardClick: (Board) -> Unit,
+    onBoardClick: (String, String) -> Unit,
     //onLongClick: (Board) -> Unit,
 ) {
     Column(
@@ -189,8 +188,7 @@ fun BoardCard(
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
             .combinedClickable(
-                onClick = { onBoardClick(board) },
-               // onLongClick = { onLongClick(board) }
+                onClick = { onBoardClick(board.id ?: "", board.title) }
             )
     ) {
         Text(

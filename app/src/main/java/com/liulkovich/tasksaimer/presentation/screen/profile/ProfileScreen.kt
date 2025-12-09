@@ -3,6 +3,7 @@ package com.liulkovich.tasksaimer.presentation.screen.profile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -35,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,6 +61,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
     onOpenBoardClick: (boardId: String, boardTitle: String) -> Unit,
   // navController: NavHostController,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ){
 
@@ -69,22 +75,42 @@ fun ProfileScreen(
         item { Spacer(Modifier.height(8.dp)) }
 
         item {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 20.dp)
+                ) {
 
-                Icon(Icons.Default.Person, "Avatar")
-                Text(
-                    text = state.currentUser?.firstName ?: "No name",
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    text = state.currentUser?.email ?: "No email",
-                    style = MaterialTheme.typography.titleMedium
-                )
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = "Avatar",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(48.dp)
+                    )
+
+                    Text(
+                        text = state.currentUser?.firstName ?: "No name",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+
+                    Text(
+                        text = state.currentUser?.email ?: "No email",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
 
@@ -93,7 +119,16 @@ fun ProfileScreen(
                 contacts = state.contacts.map { it.firstName ?: "No name" },
                 onAddClick = { showAddContactDialog = true },
                 onContactClick = { idx -> /* open contact */ },
-                onMenuClick = { idx -> /* show menu */ },
+                onMenuClick = {idx ->
+                    val contact = state.contacts[idx]
+
+                    viewModel.processCommand(
+                        ProfileCommand.RemoveContact(
+                            userId = state.currentUserId!!,
+                            contactId = contact.id
+                        )
+                    )
+                              },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -172,7 +207,7 @@ fun ProfileScreen(
     }
     if (showAddContactDialog) {
         SelectUserPopup(
-            users = state.allUsers.filter { it.id != state.currentUserId }, // не показываем себя
+            users = state.allUsers.filter { it.id != state.currentUserId },
             onAddClick = { user ->
                 viewModel.processCommand(
                     ProfileCommand.AddContact(
@@ -184,6 +219,12 @@ fun ProfileScreen(
             },
             onDismiss = { showAddContactDialog = false }
         )
+    }
+
+    if (state.isLoggedOut) {
+        LaunchedEffect(Unit) {
+            onLogout()
+        }
     }
 
 
@@ -279,7 +320,7 @@ fun MyContactsSection(
                     MyContactCard(
                         fullName = name,
                         onClick = { onContactClick(index) },
-                        onMenuClick = { onMenuClick(index) },
+                        onRemove = { onMenuClick(index) },  // теперь это удаление
                         contentColor = contentColor
                     )
                 }
@@ -292,10 +333,12 @@ fun MyContactsSection(
 fun MyContactCard(
     fullName: String,
     onClick: () -> Unit,
-    onMenuClick: () -> Unit,
-    contentColor: androidx.compose.ui.graphics.Color,
+    onRemove: () -> Unit,
+    contentColor: Color,
     modifier: Modifier = Modifier
 ) {
+    var expanded by remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -324,15 +367,31 @@ fun MyContactCard(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        IconButton(onClick = onMenuClick) {
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = "menu",
-                tint = contentColor.copy(alpha = 0.7f)
-            )
+        Box {
+            IconButton(onClick = { expanded = true }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "menu",
+                    tint = contentColor.copy(alpha = 0.7f)
+                )
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Remove") },
+                    onClick = {
+                        expanded = false
+                        onRemove()
+                    }
+                )
+            }
         }
     }
 }
+
 
 @Composable
 fun SelectUserPopup(

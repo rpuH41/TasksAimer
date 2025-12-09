@@ -48,7 +48,7 @@ class TasksViewModel @Inject constructor(
                 } else if (q.isBlank()) {
                     getTasksForBoardUseCase(id)
                 } else {
-                    searchTaskByTitleUseCase(id,q)
+                    searchTaskByTitleUseCase(id,q.lowercase())
                 }
             }
             .catch { throwable ->

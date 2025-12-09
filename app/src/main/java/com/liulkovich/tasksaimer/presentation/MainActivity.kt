@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.liulkovich.tasksaimer.presentation.components.DynamicFab
 import com.liulkovich.tasksaimer.presentation.components.DynamicTopBar
 import com.liulkovich.tasksaimer.presentation.components.NavigationTasksAimerBottomBar
@@ -19,21 +20,28 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
 
+        val auth = FirebaseAuth.getInstance()
+        val startDestination =
+            if (auth.currentUser != null) "boards"
+            else "welcome"
+
+        setContent {
             TasksAimerTheme {
+
                 val navController = rememberNavController()
+
                 Scaffold(
-                    topBar = { DynamicTopBar(
-                        navController
-                    ) },
+                    topBar = { DynamicTopBar(navController) },
                     floatingActionButton = { DynamicFab(navController) },
                     bottomBar = { NavigationTasksAimerBottomBar(navController) },
                     containerColor = MaterialTheme.colorScheme.background
                 ) { innerPadding ->
+
                     NavGraph(
                         navController = navController,
-                        paddingValues = innerPadding
+                        paddingValues = innerPadding,
+                        startDestination = startDestination
                     )
                 }
             }

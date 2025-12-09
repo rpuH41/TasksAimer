@@ -4,6 +4,7 @@ data class TaskDTO (
     val id: String? = null,
     val boardId: String? = null,
     val title: String? = null,
+    val titleLowercase: String = "",
     val description: String? = null,
     val dueDate: String? = null,
     val dueTime: String? = null,

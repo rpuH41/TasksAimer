@@ -75,6 +75,7 @@ class TaskRepositoryImpl @Inject constructor(
             val taskDtoToSave = baseTaskDto.copy(
                 id = newTaskRef.id,
                 boardId = boardId,
+                titleLowercase = task.title.lowercase(),
                 ownerId = task.ownerId
                     ?: com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
                     ?: throw IllegalStateException("User not authenticated")
@@ -89,8 +90,8 @@ class TaskRepositoryImpl @Inject constructor(
     override fun searchTaskByTitle(boardId: String, title: String): Flow<List<Task>> = callbackFlow {
         val query = tasksCollection
             .whereEqualTo("boardId",boardId)
-            .whereGreaterThanOrEqualTo("title", title)
-            .whereLessThanOrEqualTo("title", title + "\uf8ff")
+            .whereGreaterThanOrEqualTo("titleLowercase", title)
+            .whereLessThanOrEqualTo("titleLowercase", title + "\uf8ff")
         val subscription = query.addSnapshotListener { snapshot, error ->
             if (error != null) {
                 close(error)

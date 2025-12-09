@@ -23,12 +23,14 @@ import com.liulkovich.tasksaimer.presentation.screen.tasks.TasksScreen
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    startDestination: String
+
 ) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Welcome.route,
+        startDestination = startDestination,
         modifier = Modifier.padding(paddingValues)
 
     ) {
@@ -74,6 +76,15 @@ fun NavGraph(
                 onOpenBoardClick = { boardId, boardTitle ->
                     val route = Screen.Tasks.createRoute(boardId, boardTitle)
                     navController.navigate(route)
+                },
+                onLogout = {
+
+                    navController.navigate("welcome") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                    //navController.navigate(Screen.Welcome.route) {
+                    //    popUpTo(Screen.Boards.route) { inclusive = true }
+                   // }
                 }
             )
         }

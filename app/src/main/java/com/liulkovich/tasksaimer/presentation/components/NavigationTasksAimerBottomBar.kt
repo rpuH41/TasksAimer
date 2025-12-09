@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.liulkovich.tasksaimer.presentation.navigation.Screen
@@ -27,58 +26,66 @@ import com.liulkovich.tasksaimer.presentation.navigation.Screen
 @Composable
 fun NavigationTasksAimerBottomBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route?.substringBefore("/{")
+    val currentRoute = navBackStackEntry?.destination?.route
 
-    if (currentRoute !in setOf("welcome", "sign_in", "sign_up")) {
-        NavigationBar(
-            containerColor = MaterialTheme.colorScheme.surface,
-            modifier = Modifier
-                .shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(16.dp),
-                    clip = false
-                )
-                .clip(RoundedCornerShape(16.dp))
-               // .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
-        ) {
-            listOf(Screen.Boards, Screen.Notifications, Screen.Profile).forEach { screen ->
-                NavigationBarItem(
-                    selected = currentRoute == screen.route,
-                    onClick = {
-                        navController.navigate(screen.route) {
+    val showBottomBar = currentRoute?.let { route ->
+        !listOf(
+            Screen.Welcome.route,
+            Screen.SignIn.route,
+            Screen.SignUp.route
+        ).contains(route)
+    } ?: false
 
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                    icon = {
-                        val (filled, outlined) = when (screen) {
-                            Screen.Boards -> Icons.Filled.Dashboard to Icons.Outlined.Dashboard
-                            Screen.Notifications -> Icons.Filled.Notifications to Icons.Outlined.Notifications
-                            Screen.Profile -> Icons.Filled.Person to Icons.Outlined.Person
-                            else -> Icons.Filled.Dashboard to Icons.Outlined.Dashboard
-                        }
-                        Icon(
-                            imageVector = if (currentRoute == screen.route) filled else outlined,
-                            contentDescription = null
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = when (screen) {
-                                Screen.Boards -> "Boards"
-                                Screen.Notifications -> "Notifications"
-                                Screen.Profile -> "Profile"
-                                else -> ""
-                            }
-                        )
-                    },
-                    alwaysShowLabel = false
-                )
+    if (!showBottomBar) return
+
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = Modifier
+            .shadow(8.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
+    ) {
+        val items = listOf(
+            Triple(Screen.Boards, Icons.Filled.Dashboard, Icons.Outlined.Dashboard),
+            Triple(Screen.Notifications, Icons.Filled.Notifications, Icons.Outlined.Notifications),
+            Triple(Screen.Profile, Icons.Filled.Person, Icons.Outlined.Person)
+        )
+
+        items.forEach { (screen, filledIcon, outlinedIcon) ->
+                val isSelected = when (screen) {
+                Screen.Boards -> currentRoute == Screen.Boards.route || currentRoute.startsWith("tasks/") || currentRoute.startsWith("create_task/") || currentRoute.startsWith("taskDetails/") || currentRoute.startsWith("create_board")
+                Screen.Profile -> currentRoute == Screen.Profile.route
+                Screen.Notifications -> currentRoute == Screen.Notifications.route
+                else -> false
             }
+
+            NavigationBarItem(
+                selected = isSelected,
+                onClick = {
+                    if (currentRoute != Screen.Boards.route) {
+                        navController.navigate(Screen.Boards.route) {
+                            popUpTo(Screen.Boards.route) { inclusive = false }
+                            launchSingleTop = true
+                        }
+                    }
+                },
+                icon = {
+                    Icon(
+                        imageVector = if (isSelected) filledIcon else outlinedIcon,
+                        contentDescription = null
+                    )
+                },
+                label = {
+                    Text(
+                        text = when (screen) {
+                            Screen.Boards -> "Boards"
+                            Screen.Notifications -> "Notifications"
+                            Screen.Profile -> "Profile"
+                            else -> ""
+                        }
+                    )
+                },
+                alwaysShowLabel = false
+            )
         }
     }
 }
