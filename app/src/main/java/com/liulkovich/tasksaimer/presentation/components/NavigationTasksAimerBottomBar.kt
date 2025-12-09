@@ -52,7 +52,7 @@ fun NavigationTasksAimerBottomBar(navController: NavHostController) {
 
         items.forEach { (screen, filledIcon, outlinedIcon) ->
                 val isSelected = when (screen) {
-                Screen.Boards -> currentRoute == Screen.Boards.route || currentRoute.startsWith("tasks/") || currentRoute.startsWith("create_task/") || currentRoute.startsWith("taskDetails/") || currentRoute.startsWith("create_board")
+                Screen.Boards -> currentRoute == Screen.Boards.route || currentRoute?.startsWith("tasks/") == true || currentRoute?.startsWith("create_task/") == true || currentRoute?.startsWith("taskDetails/") == true || currentRoute?.startsWith("create_board") == true
                 Screen.Profile -> currentRoute == Screen.Profile.route
                 Screen.Notifications -> currentRoute == Screen.Notifications.route
                 else -> false
@@ -61,9 +61,9 @@ fun NavigationTasksAimerBottomBar(navController: NavHostController) {
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
-                    if (currentRoute != Screen.Boards.route) {
-                        navController.navigate(Screen.Boards.route) {
-                            popUpTo(Screen.Boards.route) { inclusive = false }
+                    if (currentRoute != screen.route) {
+                        navController.navigate(screen.route) {
+                            popUpTo(navController.graph.startDestinationId) { inclusive = false }
                             launchSingleTop = true
                         }
                     }
