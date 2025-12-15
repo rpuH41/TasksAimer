@@ -77,4 +77,12 @@ class AuthRepositoryImpl @Inject constructor(
     }
         .flowOn(Dispatchers.IO)
         .distinctUntilChanged()
+
+    override suspend fun sendPasswordReset(email: String): Result<Unit> = try {
+        auth.sendPasswordResetEmail(email).await()
+        Result.success(Unit)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
 }

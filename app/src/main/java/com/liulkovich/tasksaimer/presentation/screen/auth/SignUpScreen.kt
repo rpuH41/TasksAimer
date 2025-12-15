@@ -1,11 +1,14 @@
 package com.liulkovich.tasksaimer.presentation.screen.auth
 
+import android.R.attr.password
+import android.R.attr.text
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +26,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,6 +36,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -59,10 +66,6 @@ fun SignUpScreen(
     val confirmPassword by viewModel.confirmPassword.collectAsState()
     val isButtonEnabled by viewModel.isButtonEnabled.collectAsState()
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
         Column(
             modifier = modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -105,7 +108,7 @@ fun SignUpScreen(
                     text = "First Name",
                     style = TextStyle(
                         fontSize = 19.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurface
                     ),
                     textAlign = TextAlign.Start
@@ -117,7 +120,7 @@ fun SignUpScreen(
                     text = "Last Name",
                     style = TextStyle(
                         fontSize = 19.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurface
                     ),
                     textAlign = TextAlign.Start
@@ -126,6 +129,8 @@ fun SignUpScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                ,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 FirstNameTextField(
                     firstName = firstName,
@@ -147,7 +152,7 @@ fun SignUpScreen(
                 text = "Email",
                 style = TextStyle(
                     fontSize = 19.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 textAlign = TextAlign.Start
@@ -163,7 +168,7 @@ fun SignUpScreen(
                 text = "Password",
                 style = TextStyle(
                     fontSize = 19.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 textAlign = TextAlign.Start
@@ -179,7 +184,7 @@ fun SignUpScreen(
                 text = "Password confirmation",
                 style = TextStyle(
                     fontSize = 19.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 textAlign = TextAlign.Start
@@ -190,7 +195,8 @@ fun SignUpScreen(
             )
             Button( modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp,start = 15.dp, end = 15.dp, top = 30.dp),
+                .height(50.dp)
+                .padding(start = 15.dp, end = 15.dp,),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
@@ -234,7 +240,6 @@ fun SignUpScreen(
                 }
             }
         }
-    }
 }
 
 @Composable
@@ -243,14 +248,31 @@ fun FirstNameTextField(
     onFirstNameChange: (String) -> Unit,
     modifier: Modifier
 ){
-    OutlinedTextField(
+    TextField(
+
         modifier = modifier
-            .padding(bottom = 10.dp, start = 15.dp, end = 15.dp),
-        shape = RoundedCornerShape(12.dp),
+            .padding(bottom = 10.dp, start = 15.dp, end = 15.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false
+            ),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            errorContainerColor = MaterialTheme.colorScheme.surface
+        ),
         value = firstName,
         onValueChange = onFirstNameChange,
-        label = {
-            Text("John")
+        placeholder = {
+            Text(
+                text = "John",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         },
     )
 }
@@ -262,14 +284,30 @@ fun LastNameTextField(
     modifier: Modifier
 )
 {
-    OutlinedTextField(
+    TextField(
         modifier = modifier
-            .padding(bottom = 10.dp, start = 15.dp, end = 15.dp),
-        shape = RoundedCornerShape(12.dp),
+            .padding(bottom = 10.dp, start = 15.dp, end = 15.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false
+            ),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            errorContainerColor = MaterialTheme.colorScheme.surface
+        ),
         value = lastName,
         onValueChange = onLastNameChange,
-        label = {
-            Text("Doe")
+        placeholder = {
+            Text(
+                text = "Doe",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
         },
     )
 }
@@ -279,15 +317,30 @@ fun NewEmailTextField(
     newEmail: String,
     onNewEmailChange: (String) -> Unit
 ) {
-    OutlinedTextField(
+    TextField(
         modifier = Modifier
             .padding(bottom = 10.dp, start = 15.dp, end = 15.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false
+            ),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            errorContainerColor = MaterialTheme.colorScheme.surface
+        ),
         value = newEmail,
         onValueChange = onNewEmailChange,
-        label = {
-            Text("Enter your email")
+        placeholder = {
+            Text(
+                text = "Enter your email",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         },
     )
 }
@@ -299,23 +352,38 @@ fun NewPasswordTextField(
 ) {
     var showPassword by remember { mutableStateOf(false) }
 
-    OutlinedTextField(
+    TextField(
+        modifier = Modifier
+            .padding(bottom = 10.dp, start = 15.dp, end = 15.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false
+            ),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            errorContainerColor = MaterialTheme.colorScheme.surface
+        ),
         value = newPassword,
         onValueChange = onPasswordChange,
-        label = { Text("Enter your password") },
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 15.dp, end = 15.dp),
-        // Скрытие пароля
+        placeholder = {
+            Text(
+                text = "Enter your password",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            ) },
+
         visualTransformation = if (showPassword) {
             VisualTransformation.None
         } else {
             PasswordVisualTransformation()
         },
-        // Тип клавиатуры
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        // Иконка глаза справа
+
         trailingIcon = {
             IconButton(onClick = { showPassword = !showPassword }) {
                 Icon(
@@ -325,10 +393,7 @@ fun NewPasswordTextField(
                 )
             }
         },
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = MaterialTheme.colorScheme.onSurface,  // Цвет текста при фокусе (например, синий)
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant  // Цвет текста без фокуса (например, серый)
-        )
+
     )
 }
 @Composable
@@ -339,15 +404,32 @@ fun ConfirmPasswordTextField(
 
     var showPassword by remember { mutableStateOf(false) }
 
-    OutlinedTextField(
+    TextField(
+        modifier = Modifier
+            .padding(bottom = 10.dp, start = 15.dp, end = 15.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false
+            ),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            errorContainerColor = MaterialTheme.colorScheme.surface
+        ),
         value = confirmPassword,
         onValueChange = onConfirmPasswordChange,
-        label = { Text("Enter your password") },
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 15.dp, end = 15.dp),
-        // Скрытие пароля
+        placeholder = {
+            Text(
+                text = "Enter your password",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+                },
+
         visualTransformation = if (showPassword) {
             VisualTransformation.None
         } else {
@@ -365,9 +447,6 @@ fun ConfirmPasswordTextField(
                 )
             }
         },
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = MaterialTheme.colorScheme.onSurface,  // Цвет текста при фокусе (например, синий)
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant  // Цвет текста без фокуса (например, серый)
-        )
+
     )
 }

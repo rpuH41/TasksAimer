@@ -81,7 +81,7 @@ fun CreateBoardScreen(
                 enabled = creation.isSaveEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(50.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Create Board", fontWeight = FontWeight.Medium)

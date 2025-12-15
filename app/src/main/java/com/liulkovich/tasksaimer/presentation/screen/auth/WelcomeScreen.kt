@@ -3,8 +3,10 @@ package com.liulkovich.tasksaimer.presentation.screen.auth
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,10 +32,6 @@ fun WelcomeScreen(
     onSignInClick: () -> Unit,
     onSignUpClick: () -> Unit,
 ) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
         Column(
             modifier = modifier
                 .fillMaxSize(),
@@ -76,6 +74,7 @@ fun WelcomeScreen(
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(50.dp)
                     .padding(start = 10.dp, end = 10.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -90,9 +89,13 @@ fun WelcomeScreen(
 
                 )
             }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(50.dp)
                     .padding(start = 10.dp, end = 10.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -118,6 +121,6 @@ fun WelcomeScreen(
                 )
             )
         }
-    }
+
 }
 
