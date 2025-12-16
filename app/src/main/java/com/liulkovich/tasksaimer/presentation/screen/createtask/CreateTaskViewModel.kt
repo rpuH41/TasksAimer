@@ -4,10 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.liulkovich.tasksaimer.domain.entiity.Priority
-import com.liulkovich.tasksaimer.domain.entiity.Status
-import com.liulkovich.tasksaimer.domain.entiity.Task
-import com.liulkovich.tasksaimer.domain.entiity.User
+import com.liulkovich.tasksaimer.domain.entity.Priority
+import com.liulkovich.tasksaimer.domain.entity.Status
+import com.liulkovich.tasksaimer.domain.entity.Task
+import com.liulkovich.tasksaimer.domain.entity.User
 import com.liulkovich.tasksaimer.domain.interactor.DateInputInteractor
 import com.liulkovich.tasksaimer.domain.usecase.task.AddTaskUseCase
 import com.liulkovich.tasksaimer.domain.usecase.user.GetMyContactsUseCase

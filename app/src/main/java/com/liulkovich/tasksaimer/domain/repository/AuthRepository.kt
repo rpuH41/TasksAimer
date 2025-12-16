@@ -1,6 +1,6 @@
 package com.liulkovich.tasksaimer.domain.repository
 
-import com.liulkovich.tasksaimer.domain.entiity.User
+import com.liulkovich.tasksaimer.domain.entity.User
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {

@@ -1,6 +1,6 @@
 package com.liulkovich.tasksaimer.domain.usecase.user
 
-import com.liulkovich.tasksaimer.domain.entiity.User
+import com.liulkovich.tasksaimer.domain.entity.User
 import com.liulkovich.tasksaimer.domain.repository.UserRepository
 import javax.inject.Inject
 

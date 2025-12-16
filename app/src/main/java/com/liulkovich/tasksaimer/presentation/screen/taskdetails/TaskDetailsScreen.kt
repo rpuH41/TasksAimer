@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.liulkovich.tasksaimer.domain.entiity.Status
+import com.liulkovich.tasksaimer.domain.entity.Status
 
 @Composable
 fun TaskDetailsScreen(

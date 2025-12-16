@@ -1,7 +1,7 @@
 package com.liulkovich.tasksaimer.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.liulkovich.tasksaimer.domain.entiity.User
+import com.liulkovich.tasksaimer.domain.entity.User
 import com.liulkovich.tasksaimer.domain.repository.UserRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

@@ -3,9 +3,9 @@ package com.liulkovich.tasksaimer.presentation.screen.taskdetails
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.liulkovich.tasksaimer.domain.entiity.Status
-import com.liulkovich.tasksaimer.domain.entiity.Task
-import com.liulkovich.tasksaimer.domain.entiity.User
+import com.liulkovich.tasksaimer.domain.entity.Status
+import com.liulkovich.tasksaimer.domain.entity.Task
+import com.liulkovich.tasksaimer.domain.entity.User
 import com.liulkovich.tasksaimer.domain.usecase.task.DeleteTaskUseCase
 import com.liulkovich.tasksaimer.domain.usecase.task.EditTaskUseCase
 import com.liulkovich.tasksaimer.domain.usecase.task.GetTaskByIdUseCase

@@ -3,8 +3,8 @@ package com.liulkovich.tasksaimer.presentation.screen.profile
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.liulkovich.tasksaimer.domain.entiity.Board
-import com.liulkovich.tasksaimer.domain.entiity.User
+import com.liulkovich.tasksaimer.domain.entity.Board
+import com.liulkovich.tasksaimer.domain.entity.User
 import com.liulkovich.tasksaimer.domain.usecase.auth.GetCurrentUserUseCase
 import com.liulkovich.tasksaimer.domain.usecase.auth.LogoutUseCase
 import com.liulkovich.tasksaimer.domain.usecase.board.GetBoardsUseCase

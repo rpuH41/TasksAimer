@@ -2,7 +2,7 @@ package com.liulkovich.tasksaimer.presentation.screen.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.liulkovich.tasksaimer.domain.entiity.User
+import com.liulkovich.tasksaimer.domain.entity.User
 import com.liulkovich.tasksaimer.domain.usecase.auth.GetCurrentUserUseCase
 import com.liulkovich.tasksaimer.domain.usecase.auth.SignUpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

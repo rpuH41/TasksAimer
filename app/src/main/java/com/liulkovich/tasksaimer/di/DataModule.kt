@@ -6,11 +6,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.liulkovich.tasksaimer.data.repository.BoardRepositoryImpl
 import com.liulkovich.tasksaimer.data.repository.AuthRepositoryImpl
+import com.liulkovich.tasksaimer.data.repository.NotificationRepositoryImpl
 import com.liulkovich.tasksaimer.data.repository.TaskRepositoryImpl
 import com.liulkovich.tasksaimer.data.repository.UserRepositoryImpl
 import com.liulkovich.tasksaimer.domain.interactor.DateInputInteractor
 import com.liulkovich.tasksaimer.domain.repository.AuthRepository
 import com.liulkovich.tasksaimer.domain.repository.BoardRepository
+import com.liulkovich.tasksaimer.domain.repository.NotificationRepository
 import com.liulkovich.tasksaimer.domain.repository.TaskRepository
 import com.liulkovich.tasksaimer.domain.repository.UserRepository
 import dagger.Binds
@@ -53,6 +55,12 @@ interface DataModule {
         @Singleton
         fun provideFirebaseFirestore(): FirebaseFirestore {
             return Firebase.firestore
+        }
+
+        @Provides
+        @Singleton
+        fun provideNotificationRepository(firestore: FirebaseFirestore): NotificationRepository {
+            return NotificationRepositoryImpl(firestore)
         }
 
         @Provides

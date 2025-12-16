@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -30,6 +31,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.liulkovich.tasksaimer.presentation.navigation.Screen
 import com.liulkovich.tasksaimer.presentation.screen.createtask.CreateTaskViewModel
+import com.liulkovich.tasksaimer.presentation.screen.notifications.NotificationsCommand
+import com.liulkovich.tasksaimer.presentation.screen.notifications.NotificationsViewModel
 
 @Composable
 fun DynamicTopBar(
@@ -37,6 +40,7 @@ fun DynamicTopBar(
 ) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
+    val viewModel: NotificationsViewModel = hiltViewModel()
 
     when (currentRoute?.substringBefore("/{")) {
 
@@ -234,6 +238,41 @@ fun DynamicTopBar(
                 }
             }*/
 
+            )
+        }
+        Screen.Notifications.route -> {
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                ),
+                modifier = Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(16.dp),
+                        clip = false
+                    )
+                    .clip(RoundedCornerShape(16.dp)),
+                //modifier = Modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
+                title = {
+                    Text(
+                        text = "Notifications",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+
+                        )
+
+                },
+                actions = {
+                    TextButton(onClick = { viewModel.processCommand(NotificationsCommand.ClearAll) }) {
+                        Text("Clear all")
+                    }
+                }
+//                navigationIcon = {
+//                    IconButton(onClick = { navController.popBackStack() }) {
+//                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Close")
+//                    }
+//                }
             )
         }
 

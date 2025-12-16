@@ -1,6 +1,6 @@
 package com.liulkovich.tasksaimer.domain.repository
 
-import com.liulkovich.tasksaimer.domain.entiity.Board
+import com.liulkovich.tasksaimer.domain.entity.Board
 import kotlinx.coroutines.flow.Flow
 
 interface BoardRepository {

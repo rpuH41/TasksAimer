@@ -4,7 +4,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.liulkovich.tasksaimer.data.mapper.toDomain
 import com.liulkovich.tasksaimer.data.mapper.toDto
 import com.liulkovich.tasksaimer.data.remote.BoardDTO
-import com.liulkovich.tasksaimer.domain.entiity.Board
+import com.liulkovich.tasksaimer.domain.entity.Board
 import com.liulkovich.tasksaimer.domain.repository.BoardRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

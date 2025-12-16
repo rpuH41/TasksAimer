@@ -1,6 +1,6 @@
 package com.liulkovich.tasksaimer.domain.usecase.auth
 
-import com.liulkovich.tasksaimer.domain.entiity.User
+import com.liulkovich.tasksaimer.domain.entity.User
 import com.liulkovich.tasksaimer.domain.repository.AuthRepository
 import javax.inject.Inject
 

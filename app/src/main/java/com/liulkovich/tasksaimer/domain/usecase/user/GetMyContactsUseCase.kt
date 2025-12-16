@@ -1,7 +1,7 @@
 package com.liulkovich.tasksaimer.domain.usecase.user
 
 import com.google.firebase.auth.FirebaseAuth
-import com.liulkovich.tasksaimer.domain.entiity.User
+import com.liulkovich.tasksaimer.domain.entity.User
 import com.liulkovich.tasksaimer.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

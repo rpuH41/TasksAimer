@@ -2,6 +2,8 @@ package com.liulkovich.tasksaimer.presentation.screen.boards
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,9 +18,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -26,6 +31,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,12 +42,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.liulkovich.tasksaimer.domain.entiity.Board
+import com.liulkovich.tasksaimer.domain.entity.Board
 
 @Composable
 fun BoardsScreen(
     onCreateBoardClick: () -> Unit,
     onOpenBoardClick: (boardId: String, boardTitle: String) -> Unit,
+
     viewModel: BoardsViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
@@ -97,7 +104,11 @@ fun BoardsScreen(
             ) { _, board ->
                 BoardCard(
                     board = board,
-                    onBoardClick = { id, title -> onOpenBoardClick(id, title) }
+                    onBoardClick = { id, title -> onOpenBoardClick(id, title) },
+                    onEditClick = {},
+                    onDeleteClick = { viewModel.processCommand(
+                        BoardsCommand.DeleteBoard(board.id!!)
+                    ) }
                 )
             }
         }
@@ -161,22 +172,16 @@ private fun Title(
     )
 }
 
-//        Text(
-//            text = DateFormatter.formatDateToString(board.updateAt),
-//            fontSize = 12.sp,
-//            color = MaterialTheme.colorScheme.onSurfaceVariant
-//        )
-
 @Composable
 fun BoardCard(
     modifier: Modifier = Modifier,
     board: Board,
-    //backgroundColor: Color,
     onBoardClick: (String, String) -> Unit,
-    //onLongClick: (Board) -> Unit,
-) {
-    Column(
 
+    onEditClick: (Board) -> Unit,
+    onDeleteClick: (Board) -> Unit
+) {
+    Box(
         modifier = modifier
             .shadow(
                 elevation = 4.dp,
@@ -184,51 +189,98 @@ fun BoardCard(
                 clip = false
             )
             .clip(RoundedCornerShape(16.dp))
-
             .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
             .combinedClickable(
                 onClick = { onBoardClick(board.id ?: "", board.title) }
             )
+            .padding(16.dp)
     ) {
-        Text(
-            text = board.title,
-            fontSize = 14.sp,
-            maxLines = 1,
-            color = MaterialTheme.colorScheme.onSurface,
-            overflow = TextOverflow.Ellipsis,
-            softWrap = false
-        )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        board.description?.takeIf { it.isNotBlank() }?.let { desc ->
-            Spacer(modifier = Modifier.height(24.dp))
+        Column {
             Text(
-                text = desc,
-                fontSize = 16.sp,
-                maxLines = 3,
+                text = board.title,
+                fontSize = 14.sp,
+                maxLines = 1,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Medium,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                softWrap = false
             )
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "${board.tasksCount} tasks",
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            board.dueDate?.let {
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            board.description?.takeIf { it.isNotBlank() }?.let { desc ->
+                Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = it,
+                    text = desc,
+                    fontSize = 16.sp,
+                    maxLines = 3,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Medium,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "${board.tasksCount} tasks",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                board.dueDate?.let {
+                    Text(
+                        text = it,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
+
+        Row(
+            modifier = Modifier.align(Alignment.TopEnd),
+            horizontalArrangement = Arrangement.spacedBy(1.dp)
+        ) {
+
+            val editInteraction = remember { MutableInteractionSource() }
+            val isEditPressed by editInteraction.collectIsPressedAsState()
+
+            IconButton(
+                interactionSource = editInteraction,
+                onClick = { onEditClick(board) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit board",
+                    tint = if (isEditPressed)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            val deleteInteraction = remember { MutableInteractionSource() }
+            val isDeletePressed by deleteInteraction.collectIsPressedAsState()
+
+            IconButton(
+                interactionSource = deleteInteraction,
+                onClick = { onDeleteClick(board) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete board",
+                    tint = if (isDeletePressed)
+                        MaterialTheme.colorScheme.error
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
     }
 }
+

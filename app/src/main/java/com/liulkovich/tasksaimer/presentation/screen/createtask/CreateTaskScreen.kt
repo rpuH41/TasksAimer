@@ -53,8 +53,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.liulkovich.tasksaimer.domain.entiity.Priority
-import com.liulkovich.tasksaimer.domain.entiity.User
+import com.liulkovich.tasksaimer.domain.entity.Priority
+import com.liulkovich.tasksaimer.domain.entity.User
 import com.liulkovich.tasksaimer.presentation.components.TaskDueDateTextField
 import com.liulkovich.tasksaimer.presentation.components.TaskDueTimeTextField
 import com.liulkovich.tasksaimer.presentation.screen.profile.SelectUserPopup

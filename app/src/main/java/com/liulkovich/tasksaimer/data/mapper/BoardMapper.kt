@@ -1,7 +1,7 @@
 package com.liulkovich.tasksaimer.data.mapper
 
 import com.liulkovich.tasksaimer.data.remote.BoardDTO
-import com.liulkovich.tasksaimer.domain.entiity.Board
+import com.liulkovich.tasksaimer.domain.entity.Board
 
 fun BoardDTO.toDomain(documentId: String): Board {
     return Board(

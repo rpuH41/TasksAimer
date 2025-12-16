@@ -16,6 +16,7 @@ import com.liulkovich.tasksaimer.presentation.screen.auth.WelcomeScreen
 import com.liulkovich.tasksaimer.presentation.screen.boards.BoardsScreen
 import com.liulkovich.tasksaimer.presentation.screen.createboard.CreateBoardScreen
 import com.liulkovich.tasksaimer.presentation.screen.createtask.CreateTaskScreen
+import com.liulkovich.tasksaimer.presentation.screen.notifications.NotificationsScreen
 import com.liulkovich.tasksaimer.presentation.screen.profile.ProfileScreen
 import com.liulkovich.tasksaimer.presentation.screen.taskdetails.TaskDetailsScreen
 import com.liulkovich.tasksaimer.presentation.screen.tasks.TasksScreen
@@ -68,9 +69,21 @@ fun NavGraph(
         }
 
         composable(Screen.Notifications.route) {
-            //NotificationsScreen()
-        }
+            NotificationsScreen(
+                onNotificationClick = { taskId, boardId, boardTitle ->
+                    if (boardId != null && boardTitle != null) {
+                        val route = Screen.Tasks.createRoute(boardId, boardTitle)
+                        navController.navigate(route) {
 
+                            popUpTo(Screen.Boards.route) { inclusive = false }
+                            launchSingleTop = true
+                        }
+                    } else {
+                        navController.navigate(Screen.Boards.route)
+                    }
+                }
+            )
+        }
         composable(Screen.Profile.route) {
             ProfileScreen(
                 onOpenBoardClick = { boardId, boardTitle ->

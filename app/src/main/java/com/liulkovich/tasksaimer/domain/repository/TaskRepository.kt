@@ -1,6 +1,6 @@
 package com.liulkovich.tasksaimer.domain.repository
 
-import com.liulkovich.tasksaimer.domain.entiity.Task
+import com.liulkovich.tasksaimer.domain.entity.Task
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
@@ -20,4 +20,6 @@ interface TaskRepository {
     suspend fun deleteAllTasksByBoardId(boardId: String) //удаляет все задачи при удаление доски
 
     fun searchTaskByTitle(boardId: String, title: String): Flow<List<Task>> //поиск по зоголовку
+
+    suspend fun updateTaskAssigneesAndBoardMembers(taskId: String?, boardId: String, assigneeIds: List<String>)
 }

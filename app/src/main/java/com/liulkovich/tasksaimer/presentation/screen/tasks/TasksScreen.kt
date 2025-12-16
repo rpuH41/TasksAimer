@@ -53,8 +53,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.liulkovich.tasksaimer.domain.entiity.Status
-import com.liulkovich.tasksaimer.domain.entiity.Task
+import com.liulkovich.tasksaimer.domain.entity.Status
+import com.liulkovich.tasksaimer.domain.entity.Task
 
 @Composable
 fun TasksScreen(

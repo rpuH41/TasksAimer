@@ -1,6 +1,5 @@
 package com.liulkovich.tasksaimer.presentation.screen.auth
 
-import android.R.attr.duration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -64,7 +63,7 @@ fun SignInScreen(
     onBoardsClick: () -> Unit,
 ) {
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     val email by viewModel.email.collectAsState()
@@ -83,7 +82,7 @@ fun SignInScreen(
                 }
                 is AuthEffect.ShowToast -> {
                     scope.launch {
-                        snackbarHostState.showSnackbar(
+                        snackBarHostState.showSnackbar(
                             message = effect.message,
                             duration = SnackbarDuration.Long
 
@@ -95,7 +94,7 @@ fun SignInScreen(
     }
 
     SnackbarHost(
-        hostState = snackbarHostState,
+        hostState = snackBarHostState,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 12.dp)

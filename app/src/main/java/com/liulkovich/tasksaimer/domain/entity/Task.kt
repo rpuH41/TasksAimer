@@ -1,4 +1,4 @@
-package com.liulkovich.tasksaimer.domain.entiity
+package com.liulkovich.tasksaimer.domain.entity
 
 data class Task(
     val id: String? = null,

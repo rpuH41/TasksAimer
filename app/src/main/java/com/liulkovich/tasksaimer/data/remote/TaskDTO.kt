@@ -13,5 +13,5 @@ data class TaskDTO (
     val assignedTo: List<String> = emptyList(),
     val createdAt: Long? = null,
     val updatedAt: Long? = null,
-    val ownerId: String? = null
+    val ownerId: String = ""
 )

@@ -1,9 +1,9 @@
 package com.liulkovich.tasksaimer.data.mapper
 
 import com.liulkovich.tasksaimer.data.remote.TaskDTO
-import com.liulkovich.tasksaimer.domain.entiity.Priority
-import com.liulkovich.tasksaimer.domain.entiity.Status
-import com.liulkovich.tasksaimer.domain.entiity.Task
+import com.liulkovich.tasksaimer.domain.entity.Priority
+import com.liulkovich.tasksaimer.domain.entity.Status
+import com.liulkovich.tasksaimer.domain.entity.Task
 
 // --- 1. Преобразование DTO в DOMAIN (Получение из Firestore) ---
 fun TaskDTO.toDomain(): Task {

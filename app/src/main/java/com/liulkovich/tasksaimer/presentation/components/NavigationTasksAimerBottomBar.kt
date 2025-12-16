@@ -8,23 +8,34 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.liulkovich.tasksaimer.presentation.navigation.Screen
+import com.liulkovich.tasksaimer.presentation.screen.notifications.NotificationsViewModel
 
 @Composable
 fun NavigationTasksAimerBottomBar(navController: NavHostController) {
+    val notificationsViewModel: NotificationsViewModel = hiltViewModel()
+    val state by notificationsViewModel.state.collectAsState()
+    val unreadCount = state.unreadCount
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -51,8 +62,12 @@ fun NavigationTasksAimerBottomBar(navController: NavHostController) {
         )
 
         items.forEach { (screen, filledIcon, outlinedIcon) ->
-                val isSelected = when (screen) {
-                Screen.Boards -> currentRoute == Screen.Boards.route || currentRoute?.startsWith("tasks/") == true || currentRoute?.startsWith("create_task/") == true || currentRoute?.startsWith("taskDetails/") == true || currentRoute?.startsWith("create_board") == true
+            val isSelected = when (screen) {
+                Screen.Boards -> currentRoute == Screen.Boards.route ||
+                        currentRoute?.startsWith("tasks/") == true ||
+                        currentRoute?.startsWith("create_task/") == true ||
+                        currentRoute?.startsWith("taskDetails/") == true ||
+                        currentRoute?.startsWith("create_board") == true
                 Screen.Profile -> currentRoute == Screen.Profile.route
                 Screen.Notifications -> currentRoute == Screen.Notifications.route
                 else -> false
@@ -69,10 +84,27 @@ fun NavigationTasksAimerBottomBar(navController: NavHostController) {
                     }
                 },
                 icon = {
-                    Icon(
-                        imageVector = if (isSelected) filledIcon else outlinedIcon,
-                        contentDescription = null
-                    )
+                    BadgedBox(
+                        badge = {
+                            if (screen == Screen.Notifications && unreadCount > 0) {
+                                Badge(
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError
+                                ) {
+                                    Text(
+                                        text = if (unreadCount > 99) "99+" else unreadCount.toString(),
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = if (isSelected) filledIcon else outlinedIcon,
+                            contentDescription = null
+                        )
+                    }
                 },
                 label = {
                     Text(

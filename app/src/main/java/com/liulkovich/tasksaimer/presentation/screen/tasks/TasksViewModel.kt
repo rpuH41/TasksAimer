@@ -2,8 +2,8 @@ package com.liulkovich.tasksaimer.presentation.screen.tasks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.liulkovich.tasksaimer.domain.entiity.Status
-import com.liulkovich.tasksaimer.domain.entiity.Task
+import com.liulkovich.tasksaimer.domain.entity.Status
+import com.liulkovich.tasksaimer.domain.entity.Task
 import com.liulkovich.tasksaimer.domain.usecase.task.GetTasksForBoardUseCase
 import com.liulkovich.tasksaimer.domain.usecase.task.SearchTaskByTitleUseCase
 import com.liulkovich.tasksaimer.domain.usecase.task.FilterTasksByStatusUseCase

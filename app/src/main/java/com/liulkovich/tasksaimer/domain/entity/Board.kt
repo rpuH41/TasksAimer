@@ -1,4 +1,4 @@
-package com.liulkovich.tasksaimer.domain.entiity
+package com.liulkovich.tasksaimer.domain.entity
 
 import com.google.firebase.firestore.PropertyName
 

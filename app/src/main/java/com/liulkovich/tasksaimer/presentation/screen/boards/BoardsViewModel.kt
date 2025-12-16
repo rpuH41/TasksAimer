@@ -2,8 +2,9 @@ package com.liulkovich.tasksaimer.presentation.screen.boards
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.liulkovich.tasksaimer.domain.entiity.Board
+import com.liulkovich.tasksaimer.domain.entity.Board
 import com.liulkovich.tasksaimer.domain.usecase.auth.GetCurrentUserUseCase
+import com.liulkovich.tasksaimer.domain.usecase.board.DeleteBoardByIdUseCase
 import com.liulkovich.tasksaimer.domain.usecase.board.GetBoardsUseCase
 import com.liulkovich.tasksaimer.domain.usecase.board.SearchBoardByTitleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +28,8 @@ import javax.inject.Inject
 class BoardsViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getBoardsUseCase: GetBoardsUseCase,
-    private val searchBoardByTitleUseCase: SearchBoardByTitleUseCase
+    private val searchBoardByTitleUseCase: SearchBoardByTitleUseCase,
+    private val deleteBoardByIdUseCase: DeleteBoardByIdUseCase
 ) : ViewModel() {
 
     private val userIdFlow = getCurrentUserUseCase()
@@ -81,6 +83,22 @@ class BoardsViewModel @Inject constructor(
                 searchQuery.value = command.query
                 _state.update { it.copy(query = command.query) }
             }
+
+            is BoardsCommand.DeleteBoard -> {
+                deleteBoard(command.boardId)
+            }
+        }
+    }
+
+    private fun deleteBoard(boardId: String) {
+        viewModelScope.launch {
+            try {
+                deleteBoardByIdUseCase(boardId)
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(error = e.message ?: "Failed to delete board")
+                }
+            }
         }
     }
 }
@@ -88,6 +106,8 @@ class BoardsViewModel @Inject constructor(
 sealed interface BoardsCommand {
 
     data class InputSearchQuery(val query: String): BoardsCommand
+
+    data class DeleteBoard(val boardId: String): BoardsCommand
 }
 
 data class BoardState(

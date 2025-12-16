@@ -2,7 +2,7 @@ package com.liulkovich.tasksaimer.presentation.screen.createboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.liulkovich.tasksaimer.domain.entiity.Board
+import com.liulkovich.tasksaimer.domain.entity.Board
 import com.liulkovich.tasksaimer.domain.usecase.auth.GetCurrentUserUseCase
 import com.liulkovich.tasksaimer.domain.usecase.board.AddBoardUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
