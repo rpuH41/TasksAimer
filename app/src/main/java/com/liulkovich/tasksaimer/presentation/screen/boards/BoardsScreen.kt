@@ -19,16 +19,18 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -36,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,70 +51,79 @@ import com.liulkovich.tasksaimer.domain.entity.Board
 fun BoardsScreen(
     onCreateBoardClick: () -> Unit,
     onOpenBoardClick: (boardId: String, boardTitle: String) -> Unit,
-
     viewModel: BoardsViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
+    // Показываем Snackbar для message
+    LaunchedEffect(state.message) {
+        state.message?.let { msg ->
+            snackbarHostState.showSnackbar(msg)
+            // Очищаем message после показа
+            viewModel.processCommand(BoardsCommand.ClearMessage)
+        }
+    }
 
-        item { Spacer(Modifier.height(8.dp)) }
+    Box(modifier = modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item { Spacer(Modifier.height(8.dp)) }
 
-        item {
-            SearchBar(
-                query = state.query,
-                onQueryChange = {
-                    viewModel.processCommand(BoardsCommand.InputSearchQuery(it))
+            item {
+                SearchBar(
+                    query = state.query,
+                    onQueryChange = {
+                        viewModel.processCommand(BoardsCommand.InputSearchQuery(it))
+                    }
+                )
+            }
+
+            item { Spacer(Modifier.height(16.dp)) }
+
+            if (state.isLoading) {
+                item {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
                 }
-            )
+            } else if (state.boards.isEmpty()) {
+                item {
+                    Text(
+                        text = if (state.query.isBlank()) "No boards yet" else "No boards found",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.fillMaxWidth().padding(top = 64.dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = 18.sp
+                    )
+                }
+            } else {
+                itemsIndexed(
+                    items = state.boards,
+                    key = { _, board -> board.id ?: board.hashCode() }
+                ) { _, board ->
+                    BoardCard(
+                        board = board,
+                        onBoardClick = { id, title -> onOpenBoardClick(id, title) },
+                        onEditClick = {},
+                        onDeleteClick = {
+                            viewModel.processCommand(BoardsCommand.DeleteBoard(board.id!!))
+                        }
+                    )
+                }
+            }
         }
 
-        item { Spacer(Modifier.height(16.dp)) }
-
-        if (state.isLoading) {
-            item {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            }
-        } else if (state.error != null) {
-            item {
-                Text(
-                    text = state.error!!,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-        } else if (state.boards.isEmpty()) {
-            item {
-                Text(
-                    text = "No boards found",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.fillMaxWidth().padding(top = 64.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 18.sp
-                )
-            }
-        } else {
-            itemsIndexed(
-                items = state.boards,
-                key = { _, board -> board.id ?: board.hashCode() }
-            ) { _, board ->
-                BoardCard(
-                    board = board,
-                    onBoardClick = { id, title -> onOpenBoardClick(id, title) },
-                    onEditClick = {},
-                    onDeleteClick = { viewModel.processCommand(
-                        BoardsCommand.DeleteBoard(board.id!!)
-                    ) }
-                )
-            }
-        }
+        // Snackbar внизу экрана
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
@@ -246,22 +258,22 @@ fun BoardCard(
             horizontalArrangement = Arrangement.spacedBy(1.dp)
         ) {
 
-            val editInteraction = remember { MutableInteractionSource() }
-            val isEditPressed by editInteraction.collectIsPressedAsState()
-
-            IconButton(
-                interactionSource = editInteraction,
-                onClick = { onEditClick(board) }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit board",
-                    tint = if (isEditPressed)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+//            val editInteraction = remember { MutableInteractionSource() }
+//            val isEditPressed by editInteraction.collectIsPressedAsState()
+//
+//            IconButton(
+//                interactionSource = editInteraction,
+//                onClick = { onEditClick(board) }
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.Edit,
+//                    contentDescription = "Edit board",
+//                    tint = if (isEditPressed)
+//                        MaterialTheme.colorScheme.primary
+//                    else
+//                        MaterialTheme.colorScheme.onSurfaceVariant
+//                )
+//            }
 
             val deleteInteraction = remember { MutableInteractionSource() }
             val isDeletePressed by deleteInteraction.collectIsPressedAsState()

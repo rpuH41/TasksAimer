@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -87,17 +88,44 @@ class BoardsViewModel @Inject constructor(
             is BoardsCommand.DeleteBoard -> {
                 deleteBoard(command.boardId)
             }
+
+            BoardsCommand.ClearMessage -> {
+                _state.update { it.copy(message = null) }
+            }
         }
     }
 
     private fun deleteBoard(boardId: String) {
         viewModelScope.launch {
+            val boardToDelete = _state.value.boards.find { it.id == boardId }
+            if (boardToDelete == null) {
+                _state.update { it.copy(message = "Доска не найдена") }
+                return@launch
+            }
+
+            val currentUserId = getCurrentUserUseCase().first()
+            if (currentUserId != boardToDelete.ownerId) {
+                _state.update { it.copy(message = "Удалить доску может только владелец") }
+                return@launch
+            }
+
+            if (boardToDelete.tasksCount > 0) {
+                _state.update {
+                    it.copy(message = "Нельзя удалить доску с задачами.")
+                }
+                return@launch
+            }
+
             try {
                 deleteBoardByIdUseCase(boardId)
-            } catch (e: Exception) {
                 _state.update {
-                    it.copy(error = e.message ?: "Failed to delete board")
+                    it.copy(
+                        boards = it.boards.filter { b -> b.id != boardId },
+                        message = "Доска успешно удалена"
+                    )
                 }
+            } catch (e: Exception) {
+                _state.update { it.copy(message = "Ошибка при удалении: ${e.message}") }
             }
         }
     }
@@ -108,11 +136,14 @@ sealed interface BoardsCommand {
     data class InputSearchQuery(val query: String): BoardsCommand
 
     data class DeleteBoard(val boardId: String): BoardsCommand
+
+    data object ClearMessage : BoardsCommand
 }
 
 data class BoardState(
     val query: String = "",
     val boards: List<Board> = listOf(),
     val isLoading: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
+    val message: String? = null
 )
