@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.fragment)
+    implementation(libs.firebase.messaging.ktx)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.navigation.compose)

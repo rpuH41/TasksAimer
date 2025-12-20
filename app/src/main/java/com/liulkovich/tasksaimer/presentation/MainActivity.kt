@@ -28,7 +28,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TasksAimerTheme {
-
                 val navController = rememberNavController()
 
                 Scaffold(
